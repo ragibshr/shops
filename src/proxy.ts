@@ -7,7 +7,7 @@ const HOST_TO_TENANT: Record<string, string> = {
   "www.mithebangla.shop": "mithai",
 }
 
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").toLowerCase().split(":")[0]
   const tenant = HOST_TO_TENANT[host] ?? process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? "oddbox"
 
@@ -18,5 +18,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|products).*)"],
 }
