@@ -9,7 +9,12 @@ const HOST_TO_TENANT: Record<string, string> = {
 
 export default function proxy(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").toLowerCase().split(":")[0]
-  const tenant = HOST_TO_TENANT[host] ?? process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? "oddbox"
+  let tenant = HOST_TO_TENANT[host] ?? process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? "oddbox"
+
+  const shopParam = request.nextUrl.searchParams.get("shop")
+  if (shopParam === "oddbox" || shopParam === "mithai") {
+    tenant = shopParam
+  }
 
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set("x-tenant", tenant)
