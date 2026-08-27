@@ -473,13 +473,13 @@ values
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='donkey'),'grass-box',
    'গাধা বন্ধুর জন্য ঘাসের বক্স','“খাও, সুস্থ থাও” — সদ্য কাটা ঘাস',
    'যে বন্ধু প্রতি প্ল্যানে দেরি করে, যে ক্লাসমেট প্রতি বছর ফেল করে, যে কলিগ অফিসে শুধু চা খেতে আসে — তাদের সবার জন্য এক বান্ডেল টাটকা ঘাস। হাতে-কলমে বাছাইকৃত, ছাগল-অনুমোদিত কোয়ালিটি।',
-   349, 499, ARRAY['/products/ob-grass-box.svg'], NULL,
+   349, 499, ARRAY['/products/ob-grass-box.svg'], '[]'::jsonb,
    40, '🌿 গাধা অ্যাপ্রুভড', true, true, 3),
 
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='farm'),'brick-diamond',
    '“হিরা” উপহার সেট','কারণ মূল্যবোধ মূল্য ছাড়াই দেওয়া যায়',
    'ভেলভেট বক্সে সাজানো একটি আস্ত ইট। বক্স খুলে বন্ধু যা ভাববে, তা-ই আসল উপহার। ইটটি পরে ব্যবহারও করা যাবে — যেমন: জানালায় বাঁধা, বা পরের ঝগড়ায়… না না, ওইটুকু মজা করলেই হলো!',
-   199, 299, ARRAY['/products/ob-brick.svg'], NULL,
+   199, 299, ARRAY['/products/ob-brick.svg'], '[]'::jsonb,
    60, NULL, true, false, 4),
 
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='combo'),'chili-bomb',
@@ -491,19 +491,19 @@ values
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='combo'),'future-gift',
    'সম্পূর্ণ খালি বক্স — “ভবিষ্যতের উপহার”','দার্শনিকদের জন্য বিশেষ প্যাকেজ',
    'বক্সটি সম্পূর্ণ খালি। কারণ সবচেয়ে বড় উপহার হলো আশা। কার্ডে লেখা থাকবে: “যা চেয়েছিলে, জীবন তা-ই দেবে — একদিন।” নাস্তিক বন্ধুদের জন্য সুপারিশ করা হয় না।',
-   99, 149, ARRAY['/products/ob-empty-box.svg'], NULL,
+   99, 149, ARRAY['/products/ob-empty-box.svg'], '[]'::jsonb,
    120, '🧠 দার্শনিক পছন্দ', true, false, 6),
 
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='farm'),'onion-tears',
    'পেঁয়াজ টিয়ার্স বুকে (১০টি পেঁয়াজ)','কাঁদানো আর দাম বাড়ানো — দুটোই গ্যারান্টেড',
    'দেশের যেখানে পেঁয়াজের দাম আবেগের চেয়েও ঊর্ধ্বে, সেখানে ১০টি ফ্রেশ পেঁয়াজের বুকে আসলেই রাজকীয় উপহার। সাথে “কষ্ট পাইনি, পেঁয়াজের গন্ধে চোখে পানি আসছে” লেখা কার্ড।',
-   179, 259, ARRAY['/products/ob-onion.svg'], NULL,
+   179, 259, ARRAY['/products/ob-onion.svg'], '[]'::jsonb,
    70, NULL, true, false, 7),
 
   ('oddbox',(select id from public.categories where tenant='oddbox' and slug='combo'),'donkey-full-pack',
    'সম্পূর্ণ গাধা প্যাক','গোবর + ঘাস + বাতাস — ফুল সেট, ফুল মজা',
    'এক বন্ধুকে তিন ধরনের সম্মান একসাথে! গোবর (গরু-সার্টিফিকেট), ঘাস (গাধা-নমস্কার) আর বাতাসের ব্যাগ (শূন্যতার প্রতীক)। জন্মদিনে এটা পেলে বুঝতে হবে — বন্ধুরা আর রেহাই দেবে না।',
-   599, 899, ARRAY['/products/ob-combo.svg'], NULL,
+   599, 899, ARRAY['/products/ob-combo.svg'], '[]'::jsonb,
    30, '💎 বেস্ট ভ্যালু', true, true, 8)
 on conflict (tenant, slug) do nothing;
 
@@ -549,7 +549,7 @@ values
   ('mithai',(select id from public.categories where tenant='mithai' and slug='fruits'),'himsagar-mango',
    'হিমসাগর আম (৫ কেজি বক্স)','মৌসুমের রাজা, সরাসরি সাতক্ষীরা থেকে',
    'কার্বাইডমুক্ত, গাছপাকা হিমসাগর — একবার খেলে বাজারের আম ভুলে যাবেন। কাঁচা পাঠানো হয় না; পাকা আম কাগজে মুড়িয়ে নরম বাক্সে বাছাই করে পাঠানো হয়। মৌসুম: জুন–আগস্ট।',
-   1250, 1500, ARRAY['/products/mb-mango.svg'], NULL,
+   1250, 1500, ARRAY['/products/mb-mango.svg'], '[]'::jsonb,
    45, '🥭 মৌসুমি', true, true, 7),
 
   ('mithai',(select id from public.categories where tenant='mithai' and slug='dairy'),'malai-cream-roll',
