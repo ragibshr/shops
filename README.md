@@ -18,7 +18,7 @@ and a multi-role admin panel at `/admin`.
 - **Next.js 16** (App Router) + TypeScript + Tailwind v4
 - **Supabase** — Postgres, Auth (admins only), Storage (product photos), RLS
 - Framer Motion, Zustand (cart), react-hook-form + zod
-- Deploy target: **Cloudflare Pages** (one deployment → both domains)
+- Deploy target: **Vercel** (one deployment → both domains)
 
 ## 🚀 Local development
 
@@ -54,33 +54,26 @@ simulated checkout — perfect for UI work.
 - **Owner 👑** — everything: both shops' products/orders/settings, team management
 - **Moderator 🛡️** — only assigned shops; orders + products; no team/settings
 
-## ☁️ Deploying to Cloudflare Pages (go-live step 2)
+## ☁️ Deployment
 
-1. Push this repo to GitHub.
-2. Cloudflare Dashboard → **Workers & Pages → Create → Pages → Connect to Git**
-   → pick this repo.
-3. Build settings: framework preset **Next.js**, build command
-   `npx @cloudflare/next-on-pages@1`, output dir `.vercel/output/static`.
-4. Add all three env vars from `.env.local` in *Settings → Variables*.
-5. After first deploy: *Custom domains* → add `oddboxbd.shop`,
-   `www.oddboxbd.shop`, `mithebangla.shop`, `www.mithebangla.shop`.
-
-### DNS (Namecheap)
-Move nameservers to Cloudflare (free plan) per CF's instructions, then CF
-auto-provisions the apex + www records for the Pages project. Alternatively keep
-Namecheap DNS and CNAME both hosts to `<project>.pages.dev`.
-
-> The domain→theme mapping lives in `src/proxy.ts`. Update it if you rename domains.
+See **[DEPLOY.md](./DEPLOY.md)** for the full step-by-step guide covering:
+- Supabase setup (project, migration, auth, storage)
+- Vercel deployment (import, env vars, deploy)
+- Custom domain configuration (DNS, SSL)
+- AI image generation prompts for the mall storefront
+- Going-live checklist and troubleshooting
 
 ## 🗂️ Key files
 
 ```
 src/proxy.ts                  host → tenant header (the heart of multi-tenancy)
-src/lib/tenants.ts            per-shop branding, copy, fonts, colors
+src/lib/tenants.ts            per-shop branding, copy, fonts, colors, mall config
 src/lib/data.ts               product/category queries (+ demo fallback)
 src/app/(store)/…             customer-facing pages (shared by both domains)
+src/components/store/mithai/  mall storefront (exterior, interior, drawer, carousel)
 src/app/admin/…               login, dashboard, orders, products, team, settings
 supabase/migrations/0001_init.sql   full DB schema + security + seed
+DEPLOY.md                     full deployment guide (Vercel + Supabase)
 ```
 
 ## 🧪 Order flow (customer view)
