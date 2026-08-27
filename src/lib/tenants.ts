@@ -1,5 +1,20 @@
 export type TenantSlug = "oddbox" | "mithai"
 
+export interface MallHotspot {
+  id: string
+  label: string
+  categorySlug: string
+  emoji: string
+  area: { left: string; top: string; width: string; height: string }
+}
+
+export interface TenantMall {
+  exteriorImage: string
+  interiorImage: string
+  doorHotspot: { left: string; top: string; width: string; height: string }
+  racks: MallHotspot[]
+}
+
 export interface HomeCopy {
   heroKicker: string
   heroTitle: string
@@ -26,6 +41,7 @@ export interface Tenant {
   metaDescriptionBn: string
   announcementBn: string | null
   home: HomeCopy
+  mall: TenantMall | null
   footerNoteBn: string
   supportPhone: string
   supportEmail: string
@@ -76,6 +92,7 @@ export const TENANTS: Record<TenantSlug, Tenant> = {
     supportEmail: "hello@oddboxbd.shop",
     facebookUrl: "https://facebook.com/oddboxbd",
     whatsappNumber: "+8801711000000",
+    mall: null,
   },
   mithai: {
     slug: "mithai",
@@ -111,6 +128,17 @@ export const TENANTS: Record<TenantSlug, Tenant> = {
         title: "সুন্দরবনের মুখ থেকে আপনার মুখে",
         body: "মৌয়ালরা ভোরের আলোয় সুন্দরবনের গভীরে মধু সংগ্রহ করেন, আর আমরা তা ছাঁকনে ছেঁকে পাঠাই আপনার ঠিকানায়। একইভাবে, দেশের সেরা মিষ্টান্নর হাতে তৈরি হয় প্রতিটি মিষ্টি — দুধ, চিনি, আর ধৈর্য ছাড়া কিছুই নয়।",
       },
+    },
+    mall: {
+      exteriorImage: "/images/mithai/exterior.png",
+      interiorImage: "/images/mithai/interior.png",
+      doorHotspot: { left: "42%", top: "55%", width: "16%", height: "35%" },
+      racks: [
+        { id: "sweets", label: "মিষ্টি", categorySlug: "sweets", emoji: "🍮", area: { left: "5%", top: "20%", width: "22%", height: "45%" } },
+        { id: "dairy", label: "দুগ্ধজাত", categorySlug: "dairy", emoji: "🧈", area: { left: "28%", top: "20%", width: "22%", height: "45%" } },
+        { id: "honey", label: "মধু", categorySlug: "honey", emoji: "🍯", area: { left: "52%", top: "20%", width: "22%", height: "45%" } },
+        { id: "fruits", label: "আম", categorySlug: "fruits", emoji: "🥭", area: { left: "76%", top: "20%", width: "22%", height: "45%" } },
+      ],
     },
     footerNoteBn: "প্রতিটি অর্ডারে থাকে খাঁটির অঙ্গীকার — নাহলে টাকা ফেরত 🍃",
     supportPhone: "+8801811000000",

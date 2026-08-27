@@ -5,6 +5,7 @@ import { getCategories, getProducts, isLiveMode } from "@/lib/data"
 import Marquee from "@/components/store/Marquee"
 import ProductCard from "@/components/store/ProductCard"
 import SectionHeading from "@/components/store/SectionHeading"
+import MallExperience from "@/components/store/mithai/MallExperience"
 
 const STICKER_SPOTS = [
   "left-[4%] top-[16%]",
@@ -17,10 +18,16 @@ const STICKER_SPOTS = [
 
 export default async function HomePage() {
   const tenant = await getTenant()
-  const [categories, featured] = await Promise.all([
+  const [categories, featured, allProducts] = await Promise.all([
     getCategories(tenant.slug),
     getProducts(tenant.slug, { featuredOnly: true }),
+    getProducts(tenant.slug),
   ])
+
+  if (tenant.mall) {
+    return <MallExperience mall={tenant.mall} categories={categories} products={allProducts} />
+  }
+
   const home = tenant.home
 
   return (

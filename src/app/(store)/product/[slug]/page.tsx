@@ -6,6 +6,7 @@ import { getTenant } from "@/lib/tenant-server"
 import { getProductBySlug, getProducts } from "@/lib/data"
 import AddToCartPanel from "@/components/store/AddToCartPanel"
 import ProductCard from "@/components/store/ProductCard"
+import ProductImageCarousel from "@/components/store/mithai/ProductImageCarousel"
 
 export async function generateMetadata({
   params,
@@ -51,28 +52,39 @@ export default async function ProductPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
       <Link
-        href="/shop"
+        href={tenant.mall ? "/" : "/shop"}
         className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-primary"
       >
         <ArrowLeft size={15} />
-        শপে ফিরে যান
+        {tenant.mall ? "দোকানে ফিরে যান" : "শপে ফিরে যান"}
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Gallery */}
-        <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface-2 shadow-card">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.images[0]}
-            alt={product.title_bn}
-            className="aspect-square w-full object-cover"
-          />
-          {product.badge_bn && (
-            <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-card">
-              {product.badge_bn}
-            </span>
-          )}
-        </div>
+        {tenant.mall ? (
+          <div className="relative">
+            <ProductImageCarousel images={product.images} alt={product.title_bn} />
+            {product.badge_bn && (
+              <span className="absolute left-4 top-4 z-10 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-card">
+                {product.badge_bn}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface-2 shadow-card">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={product.images[0]}
+              alt={product.title_bn}
+              className="aspect-square w-full object-cover"
+            />
+            {product.badge_bn && (
+              <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-card">
+                {product.badge_bn}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Info */}
         <div className="flex flex-col">
