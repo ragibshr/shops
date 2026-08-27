@@ -6,6 +6,18 @@ for the Mithe Bangla mall storefront.
 
 ---
 
+## Live Project Status
+
+| Service | Status | Details |
+|---------|--------|---------|
+| **GitHub** | ✅ Live | [github.com/ragibshr/shops](https://github.com/ragibshr/shops) |
+| **Supabase** | ✅ Live | Project `shops-platform` (bqmbpdwocdnovnegoifo) — Singapore region |
+| **Database** | ✅ Migrated | 2 tenants, 8 categories, 16 products seeded |
+| **Vercel** | ⚠️ Partial | Project `shops-platform` created, env vars set, deploy pending Windows symlink fix |
+| **Custom Domains** | ⏳ Pending | Need DNS configuration |
+
+---
+
 ## Table of Contents
 
 1. [Prerequisites](#1-prerequisites)
@@ -43,6 +55,9 @@ for the Mithe Bangla mall storefront.
 ### 2.2 Get API Keys
 
 Once the project is ready, go to **Project Settings → API** (or **Configuration → API**):
+
+> **Live project:** `shops-platform` (ref: `bqmbpdwocdnovnegoifo`)
+> Dashboard: [supabase.com/dashboard/project/bqmbpdwocdnovnegoifo](https://supabase.com/dashboard/project/bqmbpdwocdnovnegoifo)
 
 | Key | Where to find it | Used for |
 |-----|-------------------|----------|
@@ -87,6 +102,8 @@ Replace `YOUR_EMAIL@example.com` with the email you just used.
 
 **Verify:** Go to `/admin/login` on your deployed site → log in with those credentials → you should see the admin dashboard.
 
+> ⚠️ **TODO:** Admin user not yet created. Do this step after deployment is live.
+
 ### 2.5 (Optional) Storage Bucket
 
 The migration already creates a public `product-images` bucket. If you want to
@@ -114,6 +131,9 @@ upload product photos via the admin panel:
 1. Go to [vercel.com](https://vercel.com) → **Add New... → Project**
 2. Under **Import Git Repository**, find and select `ragibshr/shops`
 3. Click **Import**
+
+> **Live project:** `shops-platform` (oddboxs-projects/shops-platform)
+> Dashboard: [vercel.com/teams/oddboxs-projects](https://vercel.com/teams/oddboxs-projects)
 
 ### 3.2 Configure the Project
 
@@ -149,7 +169,23 @@ After deployment, Vercel gives you a URL like `shops-xyz.vercel.app`.
 **Verify:** Open `https://shops-xyz.vercel.app` — you should see the OddBox BD
 storefront (default tenant on unknown hosts).
 
-### 3.5 Test Both Themes on Vercel
+### 3.5 Vercel CLI Deploy (Alternative)
+
+If you prefer CLI deployment instead of GitHub integration:
+
+```bash
+vercel login
+vercel link --project shops-platform
+vercel pull --yes --environment production
+vercel --prod --yes
+```
+
+**Known Windows issue:** The Vercel CLI may fail with `EPERM: symlink` or
+`fetch failed` on Windows without Developer Mode enabled. Solutions:
+- Enable **Windows Developer Mode** (Settings → Update & Security → For developers → Developer Mode)
+- Or use the GitHub integration approach above (recommended)
+
+### 3.6 Test Both Themes on Vercel
 
 Before connecting custom domains, verify both themes work:
 
