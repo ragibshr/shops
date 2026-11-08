@@ -6,6 +6,7 @@ import { getTenant } from "@/lib/tenant-server"
 import { getProductBySlug, getProducts } from "@/lib/data"
 import AddToCartPanel from "@/components/store/AddToCartPanel"
 import ProductCard from "@/components/store/ProductCard"
+import ProductImageCarousel from "@/components/store/ProductImageCarousel"
 
 export async function generateMetadata({
   params,
@@ -59,15 +60,10 @@ export default async function ProductPage({
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Gallery */}
-        <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface-2 shadow-card">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.images[0]}
-            alt={product.title_bn}
-            className="aspect-square w-full object-cover"
-          />
+        <div className="relative">
+          <ProductImageCarousel images={product.images} alt={product.title_bn} />
           {product.badge_bn && (
-            <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-card">
+            <span className="absolute left-4 top-4 z-10 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-white shadow-card">
               {product.badge_bn}
             </span>
           )}

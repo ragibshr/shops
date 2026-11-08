@@ -54,13 +54,23 @@ Supabase ছাড়াই **ডেমো মোডে** চলে: নমু�
 6. **সেটিংস ও পেমেন্ট**-এ গিয়ে বিকাশ নম্বর, WhatsApp নম্বর আর ডেলিভারি ফি বসাও।
 7. **টিম**-এ গিয়ে বন্ধুদের "ডেলিভারি টিম" হিসেবে যোগ করো।
 
-## ☁️ ধাপ ২ — অনলাইনে তোলা (Cloudflare Pages)
+## ☁️ ধাপ ২ — অনলাইন (Vercel)
 
-1. কোড GitHub-এ পুশ করো।
-2. Cloudflare → **Workers & Pages → Create → Pages → Connect to Git** → রিপো বাছো।
-3. Build command: `npx @cloudflare/next-on-pages@1`, output: `.vercel/output/static`।
-4. *Settings → Variables*-এ `.env.local`-এর তিনটা মান বসাও।
-5. *Custom domains*-এ `oddboxbd.shop` আর `www.oddboxbd.shop` যোগ করো।
+এখনকার সেটআপ:
+
+| সার্ভিস | কোথায় |
+|---|---|
+| GitHub | `ragibshr/shops`, **`main`** ব্রাঞ্চ (এখান থেকেই অটো-ডিপ্লয় হয়) |
+| Vercel | প্রজেক্ট `shops-platform` (টিম: OddBox's projects) |
+| Supabase | প্রজেক্ট `shops-platform` (Singapore) |
+
+`main`-এ পুশ করলেই Vercel নিজে থেকে নতুন ভার্সন লাইভ করে। তিনটা env var
+(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`)
+Vercel → Settings → Environment Variables-এ বসানো আছে।
+
+**ডোমেইন:** Vercel → shops-platform → Settings → Domains-এ `oddboxbd.shop` আর
+`www.oddboxbd.shop` যোগ করো, তারপর ডোমেইন যেখান থেকে কিনেছ সেখানে Vercel যে DNS
+রেকর্ড দেখায় সেগুলো বসাও।
 
 ## ✏️ লঞ্চের আগে যা বদলাতে হবে
 
