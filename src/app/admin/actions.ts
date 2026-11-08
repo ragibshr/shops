@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import type { OrderStatus } from "@/lib/types"
+import type { OrderStatus, SectionStatus } from "@/lib/types"
 
 async function requireSession() {
   const session = await getSession()
@@ -36,16 +36,8 @@ export async function logoutAction() {
   redirect("/admin/login")
 }
 
-export async function updateOrderStatusAction(
-  orderId: string,
-  tenant: string,
-  status: OrderStatus,
-) {
+export async function updateOrderStatusAction(orderId: string, status: OrderStatus) {
   const session = await requireSession()
-  const allowed =
-    session.profile.role === "owner" ||
-    session.profile.assigned_tenants.includes(tenant)
-  if (!allowed) throw new Error("forbidden")
 
   const sb = await createClient()
   const { error } = await sb
@@ -64,6 +56,48 @@ export async function updateOrderStatusAction(
   }
   revalidatePath("/admin/orders")
   revalidatePath("/admin")
+}
+
+/** Owner marks a bKash payment as received (paid) or not found (failed). */
+export async function verifyPaymentAction(orderId: string, outcome: "paid" | "failed") {
+  const session = await requireSession()
+  requireOwner(session)
+  const sb = await createClient()
+  const { error } = await sb.from("orders").update({ payment_status: outcome }).eq("id", orderId)
+  if (!error) {
+    await sb.from("audit_log").insert({
+      actor: session.userId,
+      action: "payment_" + outcome,
+      entity: "orders",
+      entity_id: orderId,
+    })
+  }
+  revalidatePath("/admin/orders")
+  revalidatePath("/admin")
+}
+
+/** Any staff member (owner or delivery team) can update stock. */
+export async function setStockAction(productId: string, stock: number | null) {
+  await requireSession()
+  if (stock !== null && (!Number.isInteger(stock) || stock < 0)) {
+    return { ok: false, error: "স্টক ০ বা তার বেশি পূর্ণসংখ্যা হতে হবে" }
+  }
+  const sb = await createClient()
+  const { data, error } = await sb.rpc("set_stock", { p_product: productId, p_stock: stock })
+  revalidatePath("/admin/stock")
+  revalidatePath("/", "layout")
+  if (error || !data?.ok) return { ok: false, error: error?.message ?? data?.error ?? "সমস্যা হয়েছে" }
+  return { ok: true }
+}
+
+export async function updateSectionStatusAction(sectionId: string, status: SectionStatus) {
+  const session = await requireSession()
+  requireOwner(session)
+  const sb = await createClient()
+  const { error } = await sb.from("sections").update({ status }).eq("id", sectionId)
+  revalidatePath("/admin/settings")
+  revalidatePath("/", "layout")
+  return { ok: !error, error: error?.message }
 }
 
 export interface ProductInput {
@@ -89,10 +123,7 @@ export interface ProductInput {
 
 export async function saveProductAction(input: ProductInput): Promise<{ ok: boolean; error?: string }> {
   const session = await requireSession()
-  const allowed =
-    session.profile.role === "owner" ||
-    session.profile.assigned_tenants.includes(input.tenant)
-  if (!allowed) return { ok: false, error: "অনুমতি নেই" }
+  if (session.profile.role !== "owner") return { ok: false, error: "শুধু মালিক পণ্য এডিট করতে পারবে" }
 
   const sb = await createClient()
 
@@ -122,17 +153,8 @@ export async function saveProductAction(input: ProductInput): Promise<{ ok: bool
 
 export async function deleteProductAction(id: string) {
   const session = await requireSession()
+  if (session.profile.role !== "owner") return { ok: false, error: "শুধু মালিক পণ্য মুছতে পারবে" }
   const sb = await createClient()
-  const { data: product } = await sb
-    .from("products")
-    .select("tenant")
-    .eq("id", id)
-    .maybeSingle()
-  if (!product) return { ok: false }
-  const allowed =
-    session.profile.role === "owner" ||
-    session.profile.assigned_tenants.includes(product.tenant)
-  if (!allowed) return { ok: false, error: "অনুমতি নেই" }
 
   const { error } = await sb.from("products").delete().eq("id", id)
   revalidatePath("/admin/products")
@@ -157,13 +179,10 @@ export async function inviteTeamMemberAction(
   const password = String(formData.get("password") ?? "")
   const fullName = String(formData.get("full_name") ?? "").trim()
   const role = String(formData.get("role") ?? "moderator")
-  const tenants = formData.getAll("tenants").map(String)
+  const tenants = ["oddbox"]
 
   if (!email || password.length < 6 || !fullName) {
     return { error: "সবগুলো ঘর সঠিকভাবে পূরণ করুন (পাসওয়ার্ড ন্যূনতম ৬ অক্ষর)" }
-  }
-  if (!tenants.length) {
-    return { error: "অন্তত একটি শপ বাছাই করুন" }
   }
 
   try {
@@ -217,6 +236,10 @@ export interface TenantSettingsInput {
   delivery_fee_outside: number
   free_delivery_over: number | null
   whatsapp_number: string | null
+  cod_enabled: boolean
+  bkash_enabled: boolean
+  bkash_number: string | null
+  bkash_account_type: "personal" | "agent" | "merchant"
 }
 
 export async function updateTenantSettingsAction(
@@ -225,6 +248,12 @@ export async function updateTenantSettingsAction(
 ) {
   const session = await requireSession()
   requireOwner(session)
+  if (!input.cod_enabled && !input.bkash_enabled) {
+    return { ok: false, error: "অন্তত একটি পেমেন্ট পদ্ধতি চালু রাখুন" }
+  }
+  if (input.bkash_enabled && !/^01[3-9]\d{8}$/.test(input.bkash_number ?? "")) {
+    return { ok: false, error: "বিকাশ চালু করতে সঠিক ১১ ডিজিটের বিকাশ নম্বর দিন" }
+  }
   const sb = await createClient()
   const { error } = await sb
     .from("tenants")

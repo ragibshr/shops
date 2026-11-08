@@ -8,12 +8,12 @@ export default function Celebration({
   orderNo,
   total,
   whatsapp,
-  isOddbox,
+  paidByBkash,
 }: {
   orderNo: string
   total: number
   whatsapp: string
-  isOddbox: boolean
+  paidByBkash: boolean
 }) {
   const [copied, setCopied] = useState(false)
 
@@ -67,7 +67,7 @@ export default function Celebration({
         transition={{ delay: 0.15 }}
         className="mt-6 font-display text-3xl font-extrabold text-ink md:text-4xl"
       >
-        {isOddbox ? "মজা পাঠানো হয়ে গেছে!" : "অর্ডার গ্রহণ করা হয়েছে!"}
+        অর্ডার পেয়ে গেছি! 📦
       </motion.h1>
 
       <motion.p
@@ -76,10 +76,9 @@ export default function Celebration({
         transition={{ delay: 0.22 }}
         className="mt-3 text-muted"
       >
-        {isOddbox
-          ? "আপনার উপহারটি এখন গোপন মিশনে বেরিয়েছে 😎"
-          : "আমরা খুশি হলাম! টাটকা জিনিস পৌঁছে যাবে আপনার ঘরে।"}{" "}
-        কনফার্মেশনের জন্য আমরা ফোনে যোগাযোগ করব।
+        {paidByBkash
+          ? "আপনার বিকাশ পেমেন্ট মিলিয়ে দেখে আমরা অর্ডার কনফার্ম করব।"
+          : "কনফার্মেশনের জন্য আমরা শীঘ্রই ফোন করব।"}
       </motion.p>
 
       <motion.div
@@ -105,7 +104,9 @@ export default function Celebration({
           </button>
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-dashed border-line pt-4">
-          <span className="text-sm text-muted">ডেলিভারির সময় প্রদেয়</span>
+          <span className="text-sm text-muted">
+            {paidByBkash ? "বিকাশে পাঠানো হয়েছে (যাচাই চলছে)" : "ডেলিভারির সময় প্রদেয়"}
+          </span>
           <span className="font-display text-xl font-black">{total.toLocaleString("bn-BD")}৳</span>
         </div>
       </motion.div>

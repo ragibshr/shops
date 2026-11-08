@@ -15,8 +15,8 @@ export function isValidBdPhone(phone: string): boolean {
   return /^01[3-9]\d{8}$/.test(phone.trim())
 }
 
-export function makeOrderNo(tenant: string): string {
-  const prefix = tenant === "mithai" ? "MB" : "OB"
+export function makeOrderNo(): string {
+  const prefix = "OB"
   const d = new Date()
   const ymd = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`
   const rand = Math.floor(1000 + Math.random() * 9000)

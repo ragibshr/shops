@@ -86,8 +86,8 @@ export default function Footer({ tenant }: { tenant: Tenant }) {
       </div>
 
       <div className="border-t border-line py-5 text-center text-xs text-muted">
-        © {new Date().getFullYear()} {tenant.legalName} · oddboxbd.shop · mithebangla.shop —
-        {" "}সর্বস্বত্ব সংরক্ষিত · 💵 ক্যাশ অন ডেলিভারি
+        © {new Date().getFullYear()} {tenant.legalName} · {tenant.domain} — সর্বস্বত্ব সংরক্ষিত ·
+        💵 ক্যাশ অন ডেলিভারি · বিকাশ
       </div>
     </footer>
   )

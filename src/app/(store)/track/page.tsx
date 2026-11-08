@@ -6,7 +6,15 @@ import { motion } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
 import { useTenant } from "@/components/store/StoreProvider"
 import { bnDate, bdt } from "@/lib/utils"
-import type { OrderStatus } from "@/lib/types"
+import type { OrderStatus, PaymentMethod, PaymentStatus } from "@/lib/types"
+
+const PAYMENT_TEXT: Record<PaymentStatus, string> = {
+  unpaid: "ডেলিভারির সময় দেবেন",
+  pending_verification: "বিকাশ পেমেন্ট যাচাই চলছে ⏳",
+  paid: "পরিশোধিত ✅",
+  failed: "পেমেন্ট পাওয়া যায়নি ❌ (আমাদের WhatsApp করুন)",
+  refunded: "টাকা ফেরত দেওয়া হয়েছে",
+}
 
 interface TrackedResult {
   found: boolean
@@ -20,6 +28,8 @@ interface TrackedResult {
     created_at: string
     district: string
     customer_name: string
+    payment_method?: PaymentMethod
+    payment_status?: PaymentStatus
   }
   items?: { title: string; variant: string | null; unitPrice: number; qty: number }[]
 }
@@ -191,8 +201,14 @@ export default function TrackPage() {
               </div>
             ))}
             <div className="flex justify-between border-t border-dashed border-line pt-2 font-display text-base font-black">
-              <span>সর্বমোট (COD)</span>
+              <span>সর্বমোট</span>
               <span className="text-primary">{bdt(result.order.total_bdt)}</span>
+            </div>
+            <div className="flex justify-between gap-3">
+              <span className="text-muted">
+                পেমেন্ট ({result.order.payment_method === "bkash" ? "বিকাশ" : "ক্যাশ অন ডেলিভারি"})
+              </span>
+              <b className="text-right">{PAYMENT_TEXT[result.order.payment_status ?? "unpaid"]}</b>
             </div>
           </div>
         </motion.div>

@@ -1,92 +1,85 @@
-# 🏪 Two-Shop Platform — OddBox BD + Mithe Bangla
+# 📦 Oddbox BD — oddboxbd.shop
 
-One Next.js codebase serving **two storefronts** based on the visitor's domain:
+এক ব্র্যান্ড, তিনটা সেকশন, একটার পর একটা চালু হবে:
 
-| Domain | Shop | Vibe |
-|---|---|---|
-| [oddboxbd.shop](https://oddboxbd.shop) | 🎁 অডবক্স বিডি — funny gag gifts | Loud, comic, meme energy |
-| [mithebangla.shop](https://mithebangla.shop) | 🍯 মিষ্টি বাংলা — sweets, dairy, honey, mango | Fresh green & appetizing |
+| সেকশন | অবস্থা |
+|---|---|
+| 🎁 মজার উপহার (গোবর, বাতাস, ঘাস…) | **চালু** |
+| 🥛 খাঁটি দুগ্ধজাত (ঘি, দই) | শীঘ্রই আসছে (কাস্টমার নম্বর দিয়ে অপেক্ষা-তালিকায় নাম লেখাতে পারে) |
+| 🥭 মৌসুমি আম | শীঘ্রই আসছে |
 
-Both are fully in **Bengali**, mobile-first, with a shared engine:
-no-registration ordering (cart → one form → COD), order tracking by phone,
-and a multi-role admin panel at `/admin`.
+সেকশন চালু/বন্ধ করা হয় **Admin → সেটিংস ও পেমেন্ট** থেকে, এক ক্লিকে। কোড বদলাতে হয় না।
+
+**পেমেন্ট:** ক্যাশ অন ডেলিভারি + বিকাশ। কাস্টমার তোমার নম্বরে টাকা পাঠিয়ে TrxID দেয়, তুমি বিকাশ অ্যাপে মিলিয়ে "✅ টাকা পেয়েছি" চাপো। একই TrxID দিয়ে দুইবার অর্ডার করা যায় না।
+
+**টিম:**
+- 👑 **মালিক (তুমি):** সব কিছু। পণ্য, দাম, ছবি, পেমেন্ট যাচাই, সেটিংস, টিম।
+- 🚚 **ডেলিভারি টিম (বন্ধুরা):** অর্ডার দেখা, স্টেটাস বদলানো (কনফার্ম → পাঠানো → ডেলিভারি), স্টক আপডেট। দাম বা পেমেন্ট বদলাতে পারবে না। এই নিয়ম ডেটাবেসেই আটকানো, শুধু বাটন লুকানো না।
+
+ক্যাশ অন ডেলিভারির অর্ডার "ডেলিভারি সম্পন্ন" করলে নিজে থেকেই "পরিশোধিত" হয়ে যায়। ডেলিভারির আগে বাতিল করলে স্টক ফেরত আসে।
 
 ---
 
-## 🧱 Stack
+## 🧱 যা দিয়ে বানানো (সব ফ্রি টিয়ার)
 
-- **Next.js 16** (App Router) + TypeScript + Tailwind v4
-- **Supabase** — Postgres, Auth (admins only), Storage (product photos), RLS
-- Framer Motion, Zustand (cart), react-hook-form + zod
-- Deploy target: **Cloudflare Pages** (one deployment → both domains)
+- Next.js 16 + TypeScript + Tailwind v4
+- Supabase: ডেটাবেস, অ্যাডমিন লগইন, পণ্যের ছবি
+- Cloudflare Pages: হোস্টিং
 
-## 🚀 Local development
+## 🚀 নিজের ল্যাপটপে চালানো
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000 (defaults to oddbox theme)
+npm run dev        # http://localhost:3000
 ```
 
-Without env vars the app runs in **demo mode**: local placeholder catalog,
-simulated checkout — perfect for UI work.
+Supabase ছাড়াই **ডেমো মোডে** চলে: নমুনা পণ্য, আর অর্ডার আসলে সেভ হয় না। ডিজাইন দেখার জন্য যথেষ্ট।
 
-## 🔌 Connecting Supabase (go-live step 1)
+## 🔌 ধাপ ১ — Supabase যুক্ত করা
 
-1. Create a project at [supabase.com](https://supabase.com) (free tier is fine).
-2. Copy `.env.example` → `.env.local`, fill in from *Project Settings → API*:
+1. [supabase.com](https://supabase.com)-এ ফ্রি প্রজেক্ট বানাও (region: Singapore, বাংলাদেশের কাছে)।
+2. `.env.example` কপি করে `.env.local` বানাও, *Project Settings → API* থেকে তিনটা মান বসাও:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY` (server-only, powers owner actions)
-3. Open **SQL Editor** in Supabase and run the whole of
-   `supabase/migrations/0001_init.sql` (schema + RLS + RPCs + Bengali seed data).
-4. Restart `npm run dev` — the demo banner disappears and live data flows.
-5. In Supabase → **Authentication → Users → Add user**, create your own account,
-   then run this once to make yourself owner (replace the email):
+   - `SUPABASE_SERVICE_ROLE_KEY` (গোপন রাখবে, কাউকে দেবে না)
+3. Supabase → **SQL Editor**-এ পরপর দুটো ফাইল পুরোটা পেস্ট করে Run দাও:
+   1. `supabase/migrations/0001_init.sql`
+   2. `supabase/migrations/0002_oddbox_single_brand.sql`
+4. **Authentication → Users → Add user** দিয়ে নিজের ইমেইল-পাসওয়ার্ডে অ্যাকাউন্ট বানাও, তারপর SQL Editor-এ এটা একবার চালাও (ইমেইল বদলে):
    ```sql
-   update public.profiles p
-   set role = 'owner'
-   from auth.users u
-   where p.id = u.id and u.email = 'you@example.com';
+   update public.profiles p set role = 'owner', full_name = 'Ragib'
+   from auth.users u where p.id = u.id and u.email = 'ragibshr@gmail.com';
    ```
-6. Log in at `/admin/login` 🎉
+5. `npm run dev` আবার চালাও → `/admin/login` দিয়ে ঢোকো।
+6. **সেটিংস ও পেমেন্ট**-এ গিয়ে বিকাশ নম্বর, WhatsApp নম্বর আর ডেলিভারি ফি বসাও।
+7. **টিম**-এ গিয়ে বন্ধুদের "ডেলিভারি টিম" হিসেবে যোগ করো।
 
-### Admin roles
-- **Owner 👑** — everything: both shops' products/orders/settings, team management
-- **Moderator 🛡️** — only assigned shops; orders + products; no team/settings
+## ☁️ ধাপ ২ — অনলাইনে তোলা (Cloudflare Pages)
 
-## ☁️ Deploying to Cloudflare Pages (go-live step 2)
+1. কোড GitHub-এ পুশ করো।
+2. Cloudflare → **Workers & Pages → Create → Pages → Connect to Git** → রিপো বাছো।
+3. Build command: `npx @cloudflare/next-on-pages@1`, output: `.vercel/output/static`।
+4. *Settings → Variables*-এ `.env.local`-এর তিনটা মান বসাও।
+5. *Custom domains*-এ `oddboxbd.shop` আর `www.oddboxbd.shop` যোগ করো।
 
-1. Push this repo to GitHub.
-2. Cloudflare Dashboard → **Workers & Pages → Create → Pages → Connect to Git**
-   → pick this repo.
-3. Build settings: framework preset **Next.js**, build command
-   `npx @cloudflare/next-on-pages@1`, output dir `.vercel/output/static`.
-4. Add all three env vars from `.env.local` in *Settings → Variables*.
-5. After first deploy: *Custom domains* → add `oddboxbd.shop`,
-   `www.oddboxbd.shop`, `mithebangla.shop`, `www.mithebangla.shop`.
+## ✏️ লঞ্চের আগে যা বদলাতে হবে
 
-### DNS (Namecheap)
-Move nameservers to Cloudflare (free plan) per CF's instructions, then CF
-auto-provisions the apex + www records for the Pages project. Alternatively keep
-Namecheap DNS and CNAME both hosts to `<project>.pages.dev`.
+- `src/lib/tenants.ts`: হেল্পলাইন ফোন, ইমেইল, ফেসবুক লিংক (এখন নমুনা নম্বর `+8801711000000` বসানো)।
+- Admin → পণ্য ও দাম: আসল দাম, স্টক আর **আসল ছবি** আপলোড। এখনকার ছবিগুলো শুধু প্লেসহোল্ডার।
+- দুগ্ধজাত আর আমের দাম নমুনা হিসেবে বসানো, চালু করার আগে ঠিক করে নিও।
 
-> The domain→theme mapping lives in `src/proxy.ts`. Update it if you rename domains.
-
-## 🗂️ Key files
+## 🗂️ গুরুত্বপূর্ণ ফাইল
 
 ```
-src/proxy.ts                  host → tenant header (the heart of multi-tenancy)
-src/lib/tenants.ts            per-shop branding, copy, fonts, colors
-src/lib/data.ts               product/category queries (+ demo fallback)
-src/app/(store)/…             customer-facing pages (shared by both domains)
-src/app/admin/…               login, dashboard, orders, products, team, settings
-supabase/migrations/0001_init.sql   full DB schema + security + seed
+src/lib/tenants.ts            ব্র্যান্ডের লেখা (হিরো, ট্যাগলাইন, যোগাযোগ)
+src/lib/data.ts               পণ্য/সেকশন/সেটিংস পড়া (+ ডেমো মোড)
+src/app/(store)/…             কাস্টমারের পেজ: হোম, শপ, পণ্য, চেকআউট, ট্র্যাক
+src/app/admin/…               অ্যাডমিন: ড্যাশবোর্ড, অর্ডার, স্টক, পণ্য, টিম, সেটিংস
+supabase/migrations/          ডেটাবেস, নিরাপত্তা নিয়ম, অর্ডার ফাংশন
 ```
 
-## 🧪 Order flow (customer view)
+## 🧪 অর্ডার যেভাবে চলে
 
-Browse → cart drawer → `/checkout` single form → order number like `OB-260825-1234`
-→ confetti 🎉 → WhatsApp confirm button → track anytime at `/track` using phone +
-order number.
+শপ → কার্ট → `/checkout` (নাম, ফোন, জেলা, ঠিকানা + COD/বিকাশ) → অর্ডার নম্বর `OB-261108-1234` → কনফেটি 🎉 → WhatsApp কনফার্ম বাটন → `/track`-এ ফোন + অর্ডার নম্বর দিয়ে ট্র্যাক।
 
-COD only · zone fees editable in admin settings · free delivery threshold supported.
+দাম, ডেলিভারি ফি আর স্টক সবসময় সার্ভারে আবার হিসাব হয়, তাই ব্রাউজারে কেউ দাম বদলে কম টাকায় অর্ডার দিতে পারবে না।

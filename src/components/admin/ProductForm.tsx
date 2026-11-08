@@ -106,7 +106,7 @@ export default function ProductForm({
         sort: Number(sort) || 100,
       })
       if (result.ok) {
-        router.push(`/admin/products?tenant=${tenant}`)
+        router.push("/admin/products")
         router.refresh()
       } else {
         setError(result.error ?? "সেভ করা যায়নি")
@@ -120,7 +120,7 @@ export default function ProductForm({
         <h1 className="font-display text-2xl font-extrabold">
           {mode === "new" ? "➕ নতুন পণ্য" : "✏️ পণ্য সম্পাদনা"}
         </h1>
-        <Link href={`/admin/products?tenant=${tenant}`} className="text-sm text-muted hover:text-primary">
+        <Link href="/admin/products" className="text-sm text-muted hover:text-primary">
           ← তালিকায় ফিরুন
         </Link>
       </div>

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { type ReactNode } from "react"
 import {
+  Boxes,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -16,9 +17,10 @@ import { logoutAction } from "@/app/admin/actions"
 const LINKS = [
   { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
   { href: "/admin/orders", label: "অর্ডারসমূহ", icon: ClipboardList },
-  { href: "/admin/products", label: "পণ্য ব্যবস্থাপনা", icon: Package },
-  { href: "/admin/team", label: "টিম (মালিক)", icon: Users, ownerOnly: true },
-  { href: "/admin/settings", label: "সেটিংস (মালিক)", icon: Settings, ownerOnly: true },
+  { href: "/admin/stock", label: "স্টক আপডেট", icon: Boxes },
+  { href: "/admin/products", label: "পণ্য ও দাম", icon: Package, ownerOnly: true },
+  { href: "/admin/team", label: "টিম", icon: Users, ownerOnly: true },
+  { href: "/admin/settings", label: "সেটিংস ও পেমেন্ট", icon: Settings, ownerOnly: true },
 ]
 
 export default function Sidebar({
@@ -40,7 +42,7 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line bg-surface lg:flex">
         <div className="border-b border-line px-5 py-5">
-          <p className="font-display text-lg font-extrabold">⚙️ কন্ট্রোল প্যানেল</p>
+          <p className="font-display text-lg font-extrabold">📦 অডবক্স অ্যাডমিন</p>
           <p className="mt-0.5 truncate text-[11px] text-muted">{email}</p>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -70,7 +72,7 @@ export default function Sidebar({
               isOwner ? "bg-accent-soft text-accent" : "bg-surface-2 text-muted"
             }`}
           >
-            {isOwner ? "👑 মালিক" : "🛡️ মডারেটর"}
+            {isOwner ? "👑 মালিক" : "🚚 ডেলিভারি টিম"}
           </span>
           <form action={logoutAction} className="mt-3">
             <button className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-2 text-xs font-semibold text-muted hover:border-red-300 hover:text-red-500">

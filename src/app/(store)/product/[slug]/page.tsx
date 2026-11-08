@@ -14,7 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const tenant = await getTenant()
-  const product = await getProductBySlug(tenant.slug, slug)
+  const product = await getProductBySlug(slug)
   if (!product) return {}
   return {
     title: product.title_bn,
@@ -33,12 +33,11 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const tenant = await getTenant()
-  const product = await getProductBySlug(tenant.slug, slug)
+  const product = await getProductBySlug(slug)
   if (!product) notFound()
 
   const related = (
-    await getProducts(tenant.slug)
+    await getProducts()
   ).filter((p) => p.id !== product.id && p.category_id === product.category_id).slice(0, 4)
 
   const discount =
@@ -115,7 +114,7 @@ export default async function ProductPage({
 
           <div className="mt-7 grid grid-cols-3 gap-2 text-center">
             {[
-              { icon: Banknote, label: "ক্যাশ অন ডেলিভারি" },
+              { icon: Banknote, label: "ক্যাশ অন ডেলিভারি / বিকাশ" },
               { icon: Truck, label: "সারা দেশে শিপিং" },
               { icon: ShieldCheck, label: "কোয়ালিটি গ্যারান্টি" },
             ].map(({ icon: Icon, label }) => (

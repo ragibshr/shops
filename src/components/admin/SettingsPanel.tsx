@@ -4,21 +4,20 @@ import { useState, useTransition } from "react"
 import { updateTenantSettingsAction } from "@/app/admin/actions"
 import type { TenantSettingsRow } from "@/lib/admin-types"
 
-const SHOP_META: Record<string, { label: string; emoji: string }> = {
-  oddbox: { label: "অডবক্স বিডি", emoji: "🎁" },
-  mithai: { label: "মিষ্টি বাংলা", emoji: "🍯" },
-}
-
 export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow }) {
   const [announcement, setAnnouncement] = useState(tenant.announcement_bn ?? "")
   const [feeInside, setFeeInside] = useState(String(tenant.delivery_fee_inside))
   const [feeOutside, setFeeOutside] = useState(String(tenant.delivery_fee_outside))
   const [freeOver, setFreeOver] = useState(tenant.free_delivery_over?.toString() ?? "")
   const [whatsapp, setWhatsapp] = useState(tenant.whatsapp_number ?? "")
+  const [codEnabled, setCodEnabled] = useState(tenant.cod_enabled ?? true)
+  const [bkashEnabled, setBkashEnabled] = useState(tenant.bkash_enabled ?? false)
+  const [bkashNumber, setBkashNumber] = useState(tenant.bkash_number ?? "")
+  const [bkashType, setBkashType] = useState<TenantSettingsRow["bkash_account_type"]>(
+    tenant.bkash_account_type ?? "personal",
+  )
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null)
   const [pending, startTransition] = useTransition()
-
-  const meta = SHOP_META[tenant.id] ?? { label: tenant.id, emoji: "🏬" }
 
   const save = () =>
     startTransition(async () => {
@@ -28,6 +27,10 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
         delivery_fee_outside: Number(feeOutside) || 0,
         free_delivery_over: freeOver ? Number(freeOver) : null,
         whatsapp_number: whatsapp.trim() || null,
+        cod_enabled: codEnabled,
+        bkash_enabled: bkashEnabled,
+        bkash_number: bkashNumber.trim() || null,
+        bkash_account_type: bkashType,
       })
       setFeedback(
         res.ok
@@ -39,12 +42,7 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
 
   return (
     <section className="space-y-4 rounded-3xl border border-line bg-surface p-5 shadow-card md:p-7">
-      <h2 className="font-display text-lg font-extrabold">
-        {meta.emoji} {meta.label}{" "}
-        <span className="ml-1 rounded-full bg-surface-2 px-2 py-0.5 align-middle font-mono text-[10px] font-normal text-muted">
-          {tenant.id === "oddbox" ? "oddboxbd.shop" : "mithebangla.shop"}
-        </span>
-      </h2>
+      <h2 className="font-display text-lg font-extrabold">🏪 দোকানের সেটিংস</h2>
 
       <Field label="উপরের ঘোষণা বার (খালি = লুকাবে)">
         <input value={announcement} onChange={(e) => setAnnouncement(e.target.value)} className={input} />
@@ -65,6 +63,32 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
       <Field label="WhatsApp নম্বর (+8801XXXXXXXXX)">
         <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className={input} />
       </Field>
+
+      <div className="space-y-3 rounded-2xl border border-line bg-bg p-4">
+        <p className="font-display font-bold">💳 পেমেন্ট</p>
+        <label className="flex items-center gap-2.5 text-sm">
+          <input type="checkbox" checked={codEnabled} onChange={(e) => setCodEnabled(e.target.checked)} className="h-4 w-4 accent-[var(--primary)]" />
+          💵 ক্যাশ অন ডেলিভারি চালু
+        </label>
+        <label className="flex items-center gap-2.5 text-sm">
+          <input type="checkbox" checked={bkashEnabled} onChange={(e) => setBkashEnabled(e.target.checked)} className="h-4 w-4 accent-[var(--primary)]" />
+          📱 বিকাশ চালু (কাস্টমার টাকা পাঠিয়ে TrxID দেবে, আপনি মিলিয়ে কনফার্ম করবেন)
+        </label>
+        {bkashEnabled && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="বিকাশ নম্বর (01XXXXXXXXX)">
+              <input value={bkashNumber} onChange={(e) => setBkashNumber(e.target.value)} inputMode="numeric" maxLength={11} className={input} />
+            </Field>
+            <Field label="অ্যাকাউন্টের ধরন">
+              <select value={bkashType} onChange={(e) => setBkashType(e.target.value as typeof bkashType)} className={input}>
+                <option value="personal">পার্সোনাল (কাস্টমার Send Money করবে)</option>
+                <option value="merchant">মার্চেন্ট (কাস্টমার Payment করবে)</option>
+                <option value="agent">এজেন্ট (কাস্টমার Cash Out করবে)</option>
+              </select>
+            </Field>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center gap-4">
         <button

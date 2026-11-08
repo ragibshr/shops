@@ -1,26 +1,38 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { getSession } from "@/lib/auth"
+import { SHOP_ID } from "@/lib/tenants"
 import SettingsPanel from "@/components/admin/SettingsPanel"
+import SectionsPanel from "@/components/admin/SectionsPanel"
+import type { Section } from "@/lib/types"
 
 export default async function SettingsPage() {
   const session = await getSession()
   if (session?.profile.role !== "owner") redirect("/admin")
 
   const sb = await createClient()
-  const { data: tenants } = await sb.from("tenants").select("*").order("id")
+  const [{ data: shop }, { data: sections }, { data: waitlistRows }] = await Promise.all([
+    sb.from("tenants").select("*").eq("id", SHOP_ID).maybeSingle(),
+    sb.from("sections").select("*").order("sort"),
+    sb.from("waitlist").select("section_id,phone").order("created_at"),
+  ])
+
+  const waitlist: Record<string, string[]> = {}
+  for (const row of waitlistRows ?? []) {
+    ;(waitlist[row.section_id] ??= []).push(row.phone)
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <h1 className="font-display text-2xl font-extrabold md:text-3xl">⚙️ শপ সেটিংস</h1>
-      <p className="-mt-3 text-sm text-muted">
-        ঘোষণা বার, ডেলিভারি ফি ও যোগাযোগের তথ্য — দুই শপেরই আলাদা নিয়ন্ত্রণ।
-      </p>
-      <div className="space-y-6">
-        {(tenants ?? []).map((t) => (
-          <SettingsPanel key={t.id} tenant={t} />
-        ))}
-      </div>
+      <h1 className="font-display text-2xl font-extrabold md:text-3xl">⚙️ সেটিংস ও পেমেন্ট</h1>
+      <SectionsPanel sections={(sections as Section[]) ?? []} waitlist={waitlist} />
+      {shop ? (
+        <SettingsPanel tenant={shop} />
+      ) : (
+        <p className="rounded-3xl border border-dashed border-line p-8 text-center text-muted">
+          দোকানের সেটিংস পাওয়া যায়নি — 0002 মাইগ্রেশন চালানো হয়েছে কি?
+        </p>
+      )}
     </div>
   )
 }

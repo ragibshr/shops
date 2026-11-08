@@ -43,3 +43,19 @@ export const STATUS_COLORS: Record<string, string> = {
   delivered: "bg-emerald-100 text-emerald-700",
   cancelled: "bg-red-100 text-red-600",
 }
+
+export const PAYMENT_LABELS: Record<string, string> = {
+  unpaid: "💵 COD বাকি",
+  pending_verification: "📱 যাচাই বাকি",
+  paid: "✅ পরিশোধিত",
+  failed: "❌ পেমেন্ট পাইনি",
+  refunded: "↩️ ফেরত",
+}
+
+export const PAYMENT_COLORS: Record<string, string> = {
+  unpaid: "bg-surface-2 text-muted",
+  pending_verification: "bg-pink-100 text-pink-700",
+  paid: "bg-emerald-100 text-emerald-700",
+  failed: "bg-red-100 text-red-600",
+  refunded: "bg-gray-100 text-gray-500",
+}

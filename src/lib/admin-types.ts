@@ -1,3 +1,5 @@
+import type { ShopSettings } from "@/lib/types"
+
 export interface ProfileRow {
   id: string
   full_name: string
@@ -6,12 +8,7 @@ export interface ProfileRow {
   created_at: string
 }
 
-export interface TenantSettingsRow {
+export interface TenantSettingsRow extends ShopSettings {
   id: string
   name_bn: string
-  announcement_bn: string | null
-  delivery_fee_inside: number
-  delivery_fee_outside: number
-  free_delivery_over: number | null
-  whatsapp_number: string | null
 }

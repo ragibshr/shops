@@ -1,14 +1,31 @@
-import type { Category, Product } from "@/lib/types"
+import type { Category, Product, Section, ShopSettings } from "@/lib/types"
+
+export const DEMO_SECTIONS: Section[] = [
+  { id: "fun", name_bn: "মজার উপহার", emoji: "🎁", tagline_bn: "বন্ধুকে হাসান, একটু জ্বালান — প্যাকেজিং একদম আসল", status: "live", sort: 1 },
+  { id: "dairy", name_bn: "খাঁটি দুগ্ধজাত", emoji: "🥛", tagline_bn: "গাওয়া ঘি, টক-মিষ্টি দই — খামার থেকে সোজা ঘরে", status: "coming_soon", sort: 2 },
+  { id: "mango", name_bn: "মৌসুমি আম", emoji: "🥭", tagline_bn: "গাছপাকা, কার্বাইডমুক্ত — বাছাই করে বাক্সে", status: "coming_soon", sort: 3 },
+]
+
+export const DEMO_SETTINGS: ShopSettings = {
+  announcement_bn: "🚚 ১৫০০৳+ অর্ডারে ডেলিভারি ফ্রি!",
+  delivery_fee_inside: 70,
+  delivery_fee_outside: 140,
+  free_delivery_over: 1500,
+  whatsapp_number: "+8801711000000",
+  cod_enabled: true,
+  bkash_enabled: true,
+  bkash_number: "01711000000",
+  bkash_account_type: "personal",
+}
 
 export const DEMO_CATEGORIES: Category[] = [
-  { id: "c-ob-farm", tenant: "oddbox", slug: "farm", name_bn: "ফার্ম সিরিজ", emoji: "🐄", sort: 1 },
-  { id: "c-ob-air", tenant: "oddbox", slug: "air", name_bn: "বাতাস সিরিজ", emoji: "💨", sort: 2 },
-  { id: "c-ob-donkey", tenant: "oddbox", slug: "donkey", name_bn: "গাধা স্পেশাল", emoji: "🌿", sort: 3 },
-  { id: "c-ob-combo", tenant: "oddbox", slug: "combo", name_bn: "কম্বো বক্স", emoji: "🎁", sort: 4 },
-  { id: "c-m-sweets", tenant: "mithai", slug: "sweets", name_bn: "মিষ্টি", emoji: "🍮", sort: 1 },
-  { id: "c-m-dairy", tenant: "mithai", slug: "dairy", name_bn: "ঘি ও দুধজাত", emoji: "🧈", sort: 2 },
-  { id: "c-m-honey", tenant: "mithai", slug: "honey", name_bn: "মধু", emoji: "🍯", sort: 3 },
-  { id: "c-m-fruits", tenant: "mithai", slug: "fruits", name_bn: "মৌসুমি ফল", emoji: "🥭", sort: 4 },
+  { id: "c-ob-farm", tenant: "oddbox", slug: "farm", name_bn: "ফার্ম সিরিজ", emoji: "🐄", sort: 1, section_id: "fun" },
+  { id: "c-ob-air", tenant: "oddbox", slug: "air", name_bn: "বাতাস সিরিজ", emoji: "💨", sort: 2, section_id: "fun" },
+  { id: "c-ob-donkey", tenant: "oddbox", slug: "donkey", name_bn: "গাধা স্পেশাল", emoji: "🌿", sort: 3, section_id: "fun" },
+  { id: "c-ob-combo", tenant: "oddbox", slug: "combo", name_bn: "কম্বো বক্স", emoji: "🎁", sort: 4, section_id: "fun" },
+  { id: "c-ob-ghee", tenant: "oddbox", slug: "ghee", name_bn: "ঘি ও মাখন", emoji: "🧈", sort: 10, section_id: "dairy" },
+  { id: "c-ob-doi", tenant: "oddbox", slug: "doi", name_bn: "দই", emoji: "🍮", sort: 11, section_id: "dairy" },
+  { id: "c-ob-mango", tenant: "oddbox", slug: "mango", name_bn: "আম", emoji: "🥭", sort: 20, section_id: "mango" },
 ]
 
 const P = (
@@ -121,109 +138,48 @@ export const DEMO_PRODUCTS: Product[] = [
     price_bdt: 599, compare_price_bdt: 899,
     images: ["/products/ob-combo.svg"], stock: 30, badge_bn: "💎 বেস্ট ভ্যালু", is_featured: true, sort: 8,
   }),
-
   P({
-    id: "p-mb-1", tenant: "mithai", category_id: "c-m-sweets", slug: "misti-doi",
-    title_bn: "টাটকা মিষ্টি দই",
-    tagline_bn: "প্রতিদিন ভোরে টবে জমে, দুপুরে ঘরে পৌঁছায়",
+    id: "p-ob-d1", tenant: "oddbox", category_id: "c-ob-ghee", slug: "gawa-ghee",
+    title_bn: "খাঁটি গাওয়া ঘি",
+    tagline_bn: "দেশি গরুর দুধের সর থেকে জ্বাল দেওয়া",
     description_bn:
-      "ঘি-মাখা উপরের লেয়ার, নরম ছানার ভিতরে টক-মিষ্টি সমতা। প্রতিদিন সকালে মাটির ভাঁড়ে জমানো হয় সীমিত সংখ্যক দই — শেষ হলে আগামীকাল অপেক্ষা।",
-    price_bdt: 250, compare_price_bdt: 300,
-    images: ["/products/mb-doi.svg"],
-    variants: [
-      { label: "৫০০ গ্রাম (মাটির ভাঁড়)", priceDelta: 0 },
-      { label: "১ কেজি (মাটির ভাঁড়)", priceDelta: 230 },
-    ],
-    stock: 40, badge_bn: "🆕 আজকের ব্যাচ", is_featured: true, sort: 1,
-  }),
-  P({
-    id: "p-mb-2", tenant: "mithai", category_id: "c-m-dairy", slug: "gawa-ghee",
-    title_bn: "ঘানি ভাঙা খাঁটি গরুর ঘি",
-    tagline_bn: "এক চামচে গ্রামবাংলার সকাল",
-    description_bn: "দেশি গরুর দুধের সর থেকে, ঐতিহ্যবাহী ঘানিতে ভাঙা খাঁটি ঘি। কোনো মেশানো তেল নেই।",
-    price_bdt: 1250, compare_price_bdt: 1450,
+      "গ্রামের খামারের দেশি গরুর দুধের সর জমিয়ে, ধীরে জ্বাল দিয়ে তৈরি। কোনো ডালডা, পাম অয়েল বা রং মেশানো নয়। কাচের বয়ামে প্যাক করা।",
+    price_bdt: 850, compare_price_bdt: 950,
     images: ["/products/mb-ghee.svg"],
     variants: [
       { label: "৫০০ গ্রাম", priceDelta: 0 },
-      { label: "১ কেজি", priceDelta: 1150 },
+      { label: "১ কেজি", priceDelta: 800 },
     ],
-    stock: 25, is_featured: true, sort: 2,
+    stock: 30, badge_bn: "🧈 খামার থেকে", is_featured: true, sort: 20,
   }),
   P({
-    id: "p-mb-3", tenant: "mithai", category_id: "c-m-sweets", slug: "roshogolla",
-    title_bn: "নরম রসগোল্লা (১২ পিস)",
-    tagline_bn: "চিনির সিরায় ভেসে থাকা ছানার তুলো",
-    description_bn: "হালকা চিবালেই গলে যায় — এমন নরম রসগোল্লা। বিকেলের দুধচা-র সেরা সঙ্গী।",
-    price_bdt: 380, compare_price_bdt: 450,
-    images: ["/products/mb-roshogolla.svg"],
+    id: "p-ob-d2", tenant: "oddbox", category_id: "c-ob-doi", slug: "mishti-doi",
+    title_bn: "বগুড়ার মিষ্টি দই",
+    tagline_bn: "মাটির সরায় জমানো, ঘন আর মোলায়েম",
+    description_bn: "খাঁটি দুধ ঘন করে জ্বাল দিয়ে মাটির সরায় জমানো মিষ্টি দই। ঢাকার ভিতরে ২৪ ঘণ্টায় ডেলিভারি।",
+    price_bdt: 380,
+    images: ["/products/mb-doi.svg"],
     variants: [
-      { label: "১২ পিস", priceDelta: 0 },
-      { label: "২৫ পিস", priceDelta: 400 },
+      { label: "১ কেজি সরা", priceDelta: 0 },
+      { label: "২ কেজি সরা", priceDelta: 360 },
     ],
-    stock: 35, is_featured: true, sort: 3,
+    stock: 20, sort: 21,
   }),
   P({
-    id: "p-mb-4", tenant: "mithai", category_id: "c-m-sweets", slug: "nolen-gurer-sandesh",
-    title_bn: "নলেন গুড়ের সন্দেশ",
-    tagline_bn: "শীতের সকালের সেরা মিষ্টি, এখন সারাবছর",
-    description_bn: "খেজুর গাছের নলেন গুড়ের গন্ধে যেন পুরো শীতকাল মুড়িয়ে রাখা।",
-    price_bdt: 480, compare_price_bdt: 550,
-    images: ["/products/mb-sandesh.svg"],
-    variants: [
-      { label: "১২ পিস", priceDelta: 0 },
-      { label: "২৪ পিস", priceDelta: 440 },
-    ],
-    stock: 30, sort: 4,
-  }),
-  P({
-    id: "p-mb-5", tenant: "mithai", category_id: "c-m-sweets", slug: "chanar-payesh",
-    title_bn: "ছানার পায়েস",
-    tagline_bn: "দাদির রান্নার সেই চেনা স্বাদ",
-    description_bn: "ঘন দুধে ছানা ফুটিয়ে, এলাচ আর কিশমিশ ছড়িয়ে তৈরি ঘরোয়া ছানার পায়েস।",
-    price_bdt: 580, compare_price_bdt: 650,
-    images: ["/products/mb-payesh.svg"],
-    variants: [
-      { label: "৫০০ গ্রাম", priceDelta: 0 },
-      { label: "১ কেজি", priceDelta: 520 },
-    ],
-    stock: 20, sort: 5,
-  }),
-  P({
-    id: "p-mb-6", tenant: "mithai", category_id: "c-m-honey", slug: "sundarban-honey",
-    title_bn: "সুন্দরবনের খাঁটি মধু",
-    tagline_bn: "মৌয়ালের হাত থেকে সোজা বোতলে",
-    description_bn:
-      "প্রতি বর্ষার শুরুতে সুন্দরবনের মৌয়ালরা খালি হাতে মৌচাক সংগ্রহ করেন। ছাঁকনে ছাঁকা, কোনো চিনি বা মোলাস মেশানো নয়।",
-    price_bdt: 1850, compare_price_bdt: 2200,
-    images: ["/products/mb-honey.svg"],
-    variants: [
-      { label: "৫০০ গ্রাম", priceDelta: 0 },
-      { label: "১ কেজি", priceDelta: 1600 },
-    ],
-    stock: 18, badge_bn: "🍯 সীমিত স্টক", is_featured: true, sort: 6,
-  }),
-  P({
-    id: "p-mb-7", tenant: "mithai", category_id: "c-m-fruits", slug: "himsagar-mango",
-    title_bn: "হিমসাগর আম (৫ কেজি বক্স)",
-    tagline_bn: "মৌসুমের রাজা, সরাসরি সাতক্ষীরা থেকে",
-    description_bn:
-      "কার্বাইডমুক্ত, গাছপাকা হিমসাগর — একবার খেলে বাজারের আম ভুলে যাবেন। মৌসুম: জুন–আগস্ট।",
+    id: "p-ob-m1", tenant: "oddbox", category_id: "c-ob-mango", slug: "himsagar-5kg",
+    title_bn: "হিমসাগর আম (৫ কেজি)",
+    tagline_bn: "মৌসুমের রাজা, সাতক্ষীরা থেকে",
+    description_bn: "কার্বাইডমুক্ত, গাছপাকা হিমসাগর। বাছাই করে কাগজে মুড়িয়ে নরম বাক্সে পাঠানো হয়।",
     price_bdt: 1250, compare_price_bdt: 1500,
-    images: ["/products/mb-mango.svg"], stock: 45,
-    badge_bn: "🥭 মৌসুমি", is_featured: true, sort: 7,
-    seasonal_from: "2026-06-01", seasonal_to: "2026-08-15",
+    images: ["/products/mb-mango.svg"], stock: 40,
+    badge_bn: "🥭 মৌসুমি", is_featured: true, sort: 30,
   }),
   P({
-    id: "p-mb-8", tenant: "mithai", category_id: "c-m-dairy", slug: "malai-cream-roll",
-    title_bn: "মালাই ক্রিম রোল",
-    tagline_bn: "বাইরে মোচা-ক্রাঞ্চি, ভিতরে ঠান্ডা মালাই",
-    description_bn: "লেয়ারে লেয়ারে কুরকুরে পেস্ট্রি, ভিতরে ঘন দুধের মালাই ক্রিম।",
-    price_bdt: 520, compare_price_bdt: 600,
-    images: ["/products/mb-creamroll.svg"],
-    variants: [
-      { label: "৬ পিস", priceDelta: 0 },
-      { label: "১২ পিস", priceDelta: 480 },
-    ],
-    stock: 22, sort: 8,
+    id: "p-ob-m2", tenant: "oddbox", category_id: "c-ob-mango", slug: "langra-5kg",
+    title_bn: "ল্যাংড়া আম (৫ কেজি)",
+    tagline_bn: "আঁশহীন, রসালো, মিষ্টি",
+    description_bn: "রাজশাহী-চাঁপাইয়ের বাগান থেকে সরাসরি। পাকা অবস্থায় বাছাই করা।",
+    price_bdt: 1150, compare_price_bdt: 1400,
+    images: ["/products/mb-mango.svg"], stock: 40, sort: 31,
   }),
 ]

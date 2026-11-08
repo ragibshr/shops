@@ -39,9 +39,9 @@ function SetupNotice() {
           <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs">.env.local</code> ফাইলে
           keys বসান, তারপর{" "}
           <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs">
-            supabase/migrations/0001_init.sql
+            0001_init.sql ও 0002_oddbox_single_brand.sql
           </code>{" "}
-          ফাইলটি SQL Editor-এ চালান। বিস্তারিত ধাপ README তে আছে।
+          ফাইল দুটো পরপর SQL Editor-এ চালান। বিস্তারিত ধাপ README তে আছে।
         </p>
       </div>
     </div>

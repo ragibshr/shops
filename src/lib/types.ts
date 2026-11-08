@@ -24,6 +24,17 @@ export interface Product {
   sort: number
 }
 
+export type SectionStatus = "live" | "coming_soon" | "hidden"
+
+export interface Section {
+  id: string
+  name_bn: string
+  emoji: string | null
+  tagline_bn: string | null
+  status: SectionStatus
+  sort: number
+}
+
 export interface Category {
   id: string
   tenant: string
@@ -31,6 +42,28 @@ export interface Category {
   name_bn: string
   emoji: string | null
   sort: number
+  section_id: string | null
+}
+
+export type PaymentMethod = "cod" | "bkash"
+export type PaymentStatus =
+  | "unpaid"
+  | "pending_verification"
+  | "paid"
+  | "failed"
+  | "refunded"
+
+/** Shop-wide settings, stored on the 'oddbox' row of the tenants table. */
+export interface ShopSettings {
+  announcement_bn: string | null
+  delivery_fee_inside: number
+  delivery_fee_outside: number
+  free_delivery_over: number | null
+  whatsapp_number: string | null
+  cod_enabled: boolean
+  bkash_enabled: boolean
+  bkash_number: string | null
+  bkash_account_type: "personal" | "agent" | "merchant"
 }
 
 export type OrderStatus =
@@ -55,6 +88,11 @@ export interface OrderRow {
   delivery_fee_bdt: number
   total_bdt: number
   status: OrderStatus
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  bkash_trx_id: string | null
+  bkash_sender: string | null
+  zone: "inside_dhaka" | "outside_dhaka"
   created_at: string
 }
 

@@ -1,33 +1,39 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Pencil, Plus, Star } from "lucide-react"
+import { redirect } from "next/navigation"
 import DeleteProductButton from "@/components/admin/DeleteProductButton"
-
-const TABS = [
-  { id: "oddbox", label: "🎁 অডবক্স" },
-  { id: "mithai", label: "🍯 মিষ্টি বাংলা" },
-]
+import { getSession } from "@/lib/auth"
+import { SHOP_ID } from "@/lib/tenants"
 
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tenant?: string }>
+  searchParams: Promise<{ section?: string }>
 }) {
-  const { tenant } = await searchParams
-  const current = tenant === "mithai" ? "mithai" : "oddbox"
+  const session = await getSession()
+  if (session?.profile.role !== "owner") redirect("/admin/stock")
+  const { section } = await searchParams
   const sb = await createClient()
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
-    sb.from("products").select("*").eq("tenant", current).order("sort"),
-    sb.from("categories").select("*").eq("tenant", current).order("sort"),
+  const [{ data: allProducts }, { data: categories }, { data: sections }] = await Promise.all([
+    sb.from("products").select("*").eq("tenant", SHOP_ID).order("sort"),
+    sb.from("categories").select("*").eq("tenant", SHOP_ID).order("sort"),
+    sb.from("sections").select("*").order("sort"),
   ])
+  const sectionCatIds = new Set(
+    (categories ?? []).filter((c) => c.section_id === section).map((c) => c.id),
+  )
+  const products = section
+    ? (allProducts ?? []).filter((p) => sectionCatIds.has(p.category_id))
+    : allProducts
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-extrabold md:text-3xl">📦 পণ্য ব্যবস্থাপনা</h1>
         <Link
-          href={`/admin/products/new?tenant=${current}`}
+          href="/admin/products/new"
           className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-display text-sm font-bold text-on-primary shadow-card transition-transform hover:scale-105"
         >
           <Plus size={15} />
@@ -35,16 +41,17 @@ export default async function AdminProductsPage({
         </Link>
       </div>
 
-      <div className="flex gap-2">
-        {TABS.map((t) => (
+      <div className="flex flex-wrap gap-2">
+        {[{ id: "", name_bn: "সব", emoji: "🛍️", status: "live" }, ...(sections ?? [])].map((t) => (
           <Link
             key={t.id}
-            href={`/admin/products?tenant=${t.id}`}
+            href={t.id ? `/admin/products?section=${t.id}` : "/admin/products"}
             className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-              current === t.id ? "border-primary bg-primary text-on-primary" : "border-line bg-surface text-muted hover:border-primary"
+              (section ?? "") === t.id ? "border-primary bg-primary text-on-primary" : "border-line bg-surface text-muted hover:border-primary"
             }`}
           >
-            {t.label}
+            {t.emoji} {t.name_bn}
+            {t.status !== "live" && <span className="ml-1 text-[10px] opacity-70">(বন্ধ)</span>}
           </Link>
         ))}
       </div>
@@ -99,7 +106,7 @@ export default async function AdminProductsPage({
                   <td className="p-4">
                     <div className="flex items-center justify-end gap-1.5">
                       <Link
-                        href={`/admin/products/${p.id}/edit?tenant=${current}`}
+                        href={`/admin/products/${p.id}/edit`}
                         aria-label="এডিট"
                         className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-surface-2"
                       >

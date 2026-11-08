@@ -10,12 +10,16 @@ export default async function AdminDashboard() {
   const startOfDay = new Date()
   startOfDay.setHours(0, 0, 0, 0)
 
-  const [todayRes, pendingRes, recentRes, lowStockRes] = await Promise.all([
+  const isOwner = session?.profile.role === "owner"
+
+  const [todayRes, pendingRes, recentRes, lowStockRes, verifyRes] = await Promise.all([
     sb.from("orders").select("total_bdt,status", { count: "exact" }).gte("created_at", startOfDay.toISOString()),
     sb.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
     sb.from("orders").select("*").order("created_at", { ascending: false }).limit(6),
     sb.from("products").select("id,title_bn,tenant,stock,slug").not("stock", "is", null).lte("stock", 10).order("stock").limit(6),
+    sb.from("orders").select("*", { count: "exact", head: true }).eq("payment_status", "pending_verification"),
   ])
+  const toVerify = verifyRes.count ?? 0
 
   const todaysOrders = todayRes.data ?? []
   const todayRevenue = todaysOrders
@@ -31,9 +35,19 @@ export default async function AdminDashboard() {
         <p className="mt-1 text-sm text-muted">আজকের ব্যবসার চিত্র — এক নজরে</p>
       </div>
 
+      {isOwner && toVerify > 0 && (
+        <Link
+          href="/admin/orders?pay=verify"
+          className="flex items-center justify-between gap-3 rounded-3xl border-2 border-pink-300 bg-pink-50 p-5 font-semibold text-pink-700 shadow-card"
+        >
+          <span>📱 {toVerify.toLocaleString("bn-BD")}টি বিকাশ পেমেন্ট যাচাই করা বাকি</span>
+          <span className="text-sm">দেখুন →</span>
+        </Link>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard emoji="🧾" label="আজকের অর্ডার" value={(todayRes.count ?? 0).toLocaleString("bn-BD")} />
-        <StatCard emoji="💰" label="আজকের আয় (COD)" value={bdt(todayRevenue)} accent />
+        <StatCard emoji="💰" label="আজকের বিক্রি" value={bdt(todayRevenue)} accent />
         <StatCard emoji="⏳" label="পেন্ডিং অর্ডার" value={(pendingRes.count ?? 0).toLocaleString("bn-BD")} warn={(pendingRes.count ?? 0) > 5} />
       </div>
 
@@ -84,12 +98,9 @@ export default async function AdminDashboard() {
                 <li key={p.id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{p.title_bn}</p>
-                    <p className="text-xs text-muted">
-                      {p.tenant === "mithai" ? "🍯 মিষ্টি বাংলা" : "🎁 অডবক্স"}
-                    </p>
                   </div>
                   <Link
-                    href={`/admin/products/${p.id}/edit`}
+                    href="/admin/stock"
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${
                       p.stock === 0 ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-800"
                     }`}
