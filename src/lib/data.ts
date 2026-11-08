@@ -6,10 +6,11 @@ import {
   DEMO_PRODUCTS,
   DEMO_SECTIONS,
   DEMO_SETTINGS,
+  DEMO_SOCIAL_POSTS,
 } from "@/lib/demo-data"
 import { isSeasonalActive } from "@/lib/utils"
 import { SHOP_ID } from "@/lib/tenants"
-import type { Category, Product, Section, ShopSettings } from "@/lib/types"
+import type { Category, Product, Section, ShopSettings, SocialPost } from "@/lib/types"
 
 const hasSupabase = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -48,6 +49,9 @@ export const getShopSettings = cache(async (): Promise<ShopSettings> => {
       bkash_enabled: Boolean(data.bkash_enabled && data.bkash_number),
       bkash_number: data.bkash_number ?? null,
       bkash_account_type: data.bkash_account_type ?? "personal",
+      instagram_handle: data.instagram_handle ?? null,
+      facebook_page: data.facebook_page ?? null,
+      messenger_username: data.messenger_username ?? null,
     }
   } catch {
     return DEMO_SETTINGS
@@ -159,3 +163,22 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (!sellable.has(product.category_id)) return null
   return isSeasonalActive(product.seasonal_from, product.seasonal_to) ? product : null
 }
+
+/* ---------- social ---------- */
+
+export const getSocialPosts = cache(async (): Promise<SocialPost[]> => {
+  if (!(await liveRequest())) return DEMO_SOCIAL_POSTS
+  try {
+    const sb = await createClient()
+    const { data } = await sb
+      .from("social_posts")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort")
+      .order("created_at", { ascending: false })
+      .limit(12)
+    return (data as SocialPost[]) ?? []
+  } catch {
+    return []
+  }
+})

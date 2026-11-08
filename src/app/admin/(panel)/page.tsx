@@ -2,6 +2,8 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { getSession, STATUS_LABELS, STATUS_COLORS } from "@/lib/auth"
 import { bdt, bnDate } from "@/lib/utils"
+import { SOURCE_LABELS } from "@/lib/social"
+import type { OrderSource } from "@/lib/types"
 
 export default async function AdminDashboard() {
   const session = await getSession()
@@ -13,13 +15,18 @@ export default async function AdminDashboard() {
   const isOwner = session?.profile.role === "owner"
 
   const [todayRes, pendingRes, recentRes, lowStockRes, verifyRes] = await Promise.all([
-    sb.from("orders").select("total_bdt,status", { count: "exact" }).gte("created_at", startOfDay.toISOString()),
+    sb.from("orders").select("total_bdt,status,source", { count: "exact" }).gte("created_at", startOfDay.toISOString()),
     sb.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
     sb.from("orders").select("*").order("created_at", { ascending: false }).limit(6),
     sb.from("products").select("id,title_bn,tenant,stock,slug").not("stock", "is", null).lte("stock", 10).order("stock").limit(6),
     sb.from("orders").select("*", { count: "exact", head: true }).eq("payment_status", "pending_verification"),
   ])
   const toVerify = verifyRes.count ?? 0
+  const bySource = new Map<string, number>()
+  for (const o of (todayRes.data ?? []) as { source?: string }[]) {
+    const k = o.source ?? "website"
+    bySource.set(k, (bySource.get(k) ?? 0) + 1)
+  }
 
   const todaysOrders = todayRes.data ?? []
   const todayRevenue = todaysOrders
@@ -33,6 +40,12 @@ export default async function AdminDashboard() {
           স্বাগতম, {session?.profile.full_name || "অ্যাডমিন"} 👋
         </h1>
         <p className="mt-1 text-sm text-muted">আজকের ব্যবসার চিত্র — এক নজরে</p>
+        <Link
+          href="/admin/orders/new"
+          className="mt-3 inline-block rounded-full bg-[#25D366] px-5 py-2 font-display text-sm font-bold text-white shadow-card"
+        >
+          💬 চ্যাট থেকে নতুন অর্ডার
+        </Link>
       </div>
 
       {isOwner && toVerify > 0 && (
@@ -50,6 +63,17 @@ export default async function AdminDashboard() {
         <StatCard emoji="💰" label="আজকের বিক্রি" value={bdt(todayRevenue)} accent />
         <StatCard emoji="⏳" label="পেন্ডিং অর্ডার" value={(pendingRes.count ?? 0).toLocaleString("bn-BD")} warn={(pendingRes.count ?? 0) > 5} />
       </div>
+
+      {bySource.size > 0 && (
+        <div className="flex flex-wrap gap-2 text-sm">
+          <span className="text-muted">আজকের অর্ডার কোথা থেকে:</span>
+          {[...bySource.entries()].map(([k, n]) => (
+            <span key={k} className="rounded-full bg-surface px-3 py-1 font-semibold shadow-card">
+              {SOURCE_LABELS[k as OrderSource] ?? k} · {n.toLocaleString("bn-BD")}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Recent orders */}

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Mail, MessageCircle, Phone } from "lucide-react"
+import { Camera, Mail, MessageCircle, Phone, Send, ThumbsUp } from "lucide-react"
 import type { Tenant } from "@/lib/tenants"
 
 export default function Footer({ tenant }: { tenant: Tenant }) {
@@ -41,30 +41,38 @@ export default function Footer({ tenant }: { tenant: Tenant }) {
                 {tenant.supportEmail}
               </a>
             </li>
-            <li>
-              <a
-                href={`https://wa.me/${tenant.whatsappNumber.replace(/[^0-9]/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary"
-              >
-                <MessageCircle size={15} className="text-primary" />
-                WhatsApp-এ মেসেজ দিন
-              </a>
-            </li>
-            <li>
-              <a
-                href={tenant.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary"
-              >
-                <span className="flex h-[15px] w-[15px] items-center justify-center rounded-[4px] bg-primary text-[10px] font-black text-white">
-                  f
-                </span>
-                ফেসবুক পেজ
-              </a>
-            </li>
+            {tenant.links.whatsapp && (
+              <li>
+                <a href={tenant.links.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary">
+                  <MessageCircle size={15} className="text-[#25D366]" />
+                  WhatsApp-এ অর্ডার / মেসেজ
+                </a>
+              </li>
+            )}
+            {tenant.links.messenger && (
+              <li>
+                <a href={tenant.links.messenger} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary">
+                  <Send size={15} className="text-[#0084FF]" />
+                  Messenger-এ মেসেজ
+                </a>
+              </li>
+            )}
+            {tenant.links.instagram && (
+              <li>
+                <a href={tenant.links.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary">
+                  <Camera size={15} className="text-pink-500" />
+                  Instagram
+                </a>
+              </li>
+            )}
+            {tenant.links.facebook && (
+              <li>
+                <a href={tenant.links.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-muted transition-colors hover:text-primary">
+                  <ThumbsUp size={15} className="text-[#1877F2]" />
+                  Facebook পেজ
+                </a>
+              </li>
+            )}
           </ul>
         </div>
 

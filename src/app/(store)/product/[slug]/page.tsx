@@ -7,6 +7,9 @@ import { getProductBySlug, getProducts } from "@/lib/data"
 import AddToCartPanel from "@/components/store/AddToCartPanel"
 import ProductCard from "@/components/store/ProductCard"
 import ProductImageCarousel from "@/components/store/ProductImageCarousel"
+import ChatOrderButtons from "@/components/store/ChatOrderButtons"
+import { headers } from "next/headers"
+import { bdt } from "@/lib/utils"
 
 export async function generateMetadata({
   params,
@@ -36,6 +39,7 @@ export default async function ProductPage({
   const { slug } = await params
   const product = await getProductBySlug(slug)
   if (!product) notFound()
+  const host = (await headers()).get("host") ?? "oddboxbd.shop"
 
   const related = (
     await getProducts()
@@ -106,6 +110,12 @@ export default async function ProductPage({
 
           <div className="mt-6">
             <AddToCartPanel product={product} />
+            <ChatOrderButtons
+              title={product.title_bn}
+              price={bdt(product.price_bdt)}
+              slug={product.slug}
+              url={`https://${host}/product/${product.slug}`}
+            />
           </div>
 
           <div className="mt-7 grid grid-cols-3 gap-2 text-center">

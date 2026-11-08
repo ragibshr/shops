@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { getTenant } from "@/lib/tenant-server"
-import { getProducts, getVisibleSections, isLiveMode } from "@/lib/data"
+import { getProducts, getSocialPosts, getVisibleSections, isLiveMode } from "@/lib/data"
+import SocialEmbed from "@/components/store/SocialEmbed"
 import Marquee from "@/components/store/Marquee"
 import ProductCard from "@/components/store/ProductCard"
 import SectionHeading from "@/components/store/SectionHeading"
@@ -24,10 +25,12 @@ const STICKER_SPOTS = [
 
 export default async function HomePage() {
   const tenant = await getTenant()
-  const [sections, featured] = await Promise.all([
+  const [sections, featured, posts] = await Promise.all([
     getVisibleSections(),
     getProducts({ featuredOnly: true }),
+    getSocialPosts(),
   ])
+  const { links } = tenant
   const home = tenant.home
 
   return (
@@ -157,6 +160,45 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* ---------- REELS / SOCIAL ---------- */}
+      {(posts.length > 0 || links.instagram || links.facebook) && (
+        <section id="reels" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-16 md:px-6">
+          <SectionHeading
+            title="🎬 আমাদের রিলস"
+            sub="বন্ধুরা উপহার খুলে কী করল — দেখুন, হাসুন, ফলো করুন"
+          />
+          {posts.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.slice(0, 6).map((p) => (
+                <SocialEmbed key={p.id} platform={p.platform} url={p.url} />
+              ))}
+            </div>
+          )}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {links.instagram && (
+              <a
+                href={links.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-6 py-3 font-display text-sm font-bold text-white shadow-card transition-transform hover:scale-105"
+              >
+                📸 Instagram-এ ফলো করুন
+              </a>
+            )}
+            {links.facebook && (
+              <a
+                href={links.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-[#1877F2] px-6 py-3 font-display text-sm font-bold text-white shadow-card transition-transform hover:scale-105"
+              >
+                📘 Facebook পেজ
+              </a>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* ---------- WHY US ---------- */}
       <section id="why-us" className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-16 md:px-6">

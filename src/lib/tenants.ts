@@ -10,6 +10,8 @@
  * bKash number) live in the database — Admin → Settings — not here.
  */
 
+import type { SocialLinks } from "@/lib/social"
+
 export type TenantSlug = "oddbox"
 
 export const SHOP_ID: TenantSlug = "oddbox"
@@ -45,6 +47,8 @@ export interface Tenant {
   facebookUrl: string
   /** Fallback only — the live value comes from Admin → Settings. */
   whatsappNumber: string
+  /** WhatsApp / Messenger / Instagram / Facebook links (from Admin → Settings). */
+  links: SocialLinks
 }
 
 export const BRAND: Tenant = {
@@ -87,6 +91,7 @@ export const BRAND: Tenant = {
   supportEmail: "hello@oddboxbd.shop",
   facebookUrl: "https://facebook.com/oddboxbd",
   whatsappNumber: "+8801711000000",
+  links: { whatsapp: null, messenger: null, instagram: null, facebook: null },
 }
 
 /** @deprecated kept so old imports compile; there is only one shop now. */

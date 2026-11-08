@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react"
 import Navbar from "@/components/store/Navbar"
 import Footer from "@/components/store/Footer"
 import CartDrawer from "@/components/store/CartDrawer"
+import ChatFab from "@/components/store/ChatFab"
 import { useTenant } from "@/components/store/StoreProvider"
 
 export default function StoreChrome({ children }: { children: ReactNode }) {
@@ -16,6 +17,7 @@ export default function StoreChrome({ children }: { children: ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer tenant={tenant} />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <ChatFab />
     </div>
   )
 }

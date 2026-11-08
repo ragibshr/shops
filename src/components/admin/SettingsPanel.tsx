@@ -10,6 +10,9 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
   const [feeOutside, setFeeOutside] = useState(String(tenant.delivery_fee_outside))
   const [freeOver, setFreeOver] = useState(tenant.free_delivery_over?.toString() ?? "")
   const [whatsapp, setWhatsapp] = useState(tenant.whatsapp_number ?? "")
+  const [instagram, setInstagram] = useState(tenant.instagram_handle ?? "")
+  const [facebook, setFacebook] = useState(tenant.facebook_page ?? "")
+  const [messenger, setMessenger] = useState(tenant.messenger_username ?? "")
   const [codEnabled, setCodEnabled] = useState(tenant.cod_enabled ?? true)
   const [bkashEnabled, setBkashEnabled] = useState(tenant.bkash_enabled ?? false)
   const [bkashNumber, setBkashNumber] = useState(tenant.bkash_number ?? "")
@@ -31,6 +34,9 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
         bkash_enabled: bkashEnabled,
         bkash_number: bkashNumber.trim() || null,
         bkash_account_type: bkashType,
+        instagram_handle: instagram.trim().replace(/^@/, "") || null,
+        facebook_page: facebook.trim() || null,
+        messenger_username: messenger.trim().replace(/^@/, "") || null,
       })
       setFeedback(
         res.ok
@@ -63,6 +69,24 @@ export default function SettingsPanel({ tenant }: { tenant: TenantSettingsRow })
       <Field label="WhatsApp নম্বর (+8801XXXXXXXXX)">
         <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className={input} />
       </Field>
+
+      <div className="space-y-3 rounded-2xl border border-line bg-bg p-4">
+        <p className="font-display font-bold">📱 সোশ্যাল মিডিয়া</p>
+        <p className="-mt-1 text-xs text-muted">
+          সাইটের চ্যাট বাটন, ফুটার আর রিলস সেকশন এখান থেকে লিংক নেয়। WhatsApp নম্বর উপরের ঘরেই।
+        </p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Instagram ইউজারনেম">
+            <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="oddboxbd" className={input} />
+          </Field>
+          <Field label="Facebook পেজ (ইউজারনেম বা লিংক)">
+            <input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="oddboxbd" className={input} />
+          </Field>
+          <Field label="Messenger (m.me/… এর পরের অংশ)">
+            <input value={messenger} onChange={(e) => setMessenger(e.target.value)} placeholder="oddboxbd" className={input} />
+          </Field>
+        </div>
+      </div>
 
       <div className="space-y-3 rounded-2xl border border-line bg-bg p-4">
         <p className="font-display font-bold">💳 পেমেন্ট</p>

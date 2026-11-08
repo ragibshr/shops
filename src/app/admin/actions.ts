@@ -5,7 +5,8 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import type { OrderStatus, SectionStatus } from "@/lib/types"
+import type { OrderSource, OrderStatus, PaymentMethod, SectionStatus } from "@/lib/types"
+import { SHOP_ID } from "@/lib/tenants"
 
 async function requireSession() {
   const session = await getSession()
@@ -240,6 +241,9 @@ export interface TenantSettingsInput {
   bkash_enabled: boolean
   bkash_number: string | null
   bkash_account_type: "personal" | "agent" | "merchant"
+  instagram_handle: string | null
+  facebook_page: string | null
+  messenger_username: string | null
 }
 
 export async function updateTenantSettingsAction(
@@ -262,4 +266,85 @@ export async function updateTenantSettingsAction(
   revalidatePath("/admin/settings")
   revalidatePath("/", "layout")
   return { ok: !error, error: error?.message }
+}
+
+/* ---------- Social posts (reels on the homepage) ---------- */
+
+export async function addSocialPostAction(
+  url: string,
+  captionBn: string | null,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await requireSession()
+  requireOwner(session)
+  const clean = url.trim()
+  const platform = /instagram\.com\//.test(clean)
+    ? "instagram"
+    : /(facebook\.com|fb\.watch)\//.test(clean)
+      ? "facebook"
+      : null
+  if (!platform || !clean.startsWith("https://")) {
+    return { ok: false, error: "Instagram বা Facebook-এর রিল/পোস্টের পুরো লিংক দিন (https://…)" }
+  }
+  const sb = await createClient()
+  const { error } = await sb
+    .from("social_posts")
+    .insert({ platform, url: clean, caption_bn: captionBn?.trim() || null })
+  revalidatePath("/admin/settings")
+  revalidatePath("/", "layout")
+  return { ok: !error, error: error?.message }
+}
+
+export async function deleteSocialPostAction(id: number) {
+  const session = await requireSession()
+  requireOwner(session)
+  const sb = await createClient()
+  const { error } = await sb.from("social_posts").delete().eq("id", id)
+  revalidatePath("/admin/settings")
+  revalidatePath("/", "layout")
+  return { ok: !error, error: error?.message }
+}
+
+/* ---------- Orders taken in chat (WhatsApp, Messenger, …) ---------- */
+
+export interface ChatOrderInput {
+  source: OrderSource
+  customer_name: string
+  phone: string
+  district: string
+  zone: "inside_dhaka" | "outside_dhaka"
+  thana_area: string | null
+  address: string
+  notes_bn: string | null
+  gift_message_bn: string | null
+  payment_method: PaymentMethod
+  bkash_sender: string | null
+  bkash_trx_id: string | null
+  items: { product_id: string; variant_label: string | null; qty: number }[]
+}
+
+/** Owner or delivery team records an order that came in by chat or phone. */
+export async function createChatOrderAction(
+  input: ChatOrderInput,
+): Promise<{ ok: boolean; order_no?: string; total?: number; error?: string }> {
+  const session = await requireSession()
+  if (input.source === "website") return { ok: false, error: "উৎস বাছুন" }
+
+  const sb = await createClient()
+  const { data, error } = await sb.rpc("place_order", {
+    payload: { ...input, tenant: SHOP_ID },
+  })
+  if (error) return { ok: false, error: error.message }
+  if (!data?.ok) return { ok: false, error: data?.error ?? "unknown" }
+
+  await sb.from("orders").update({ source: input.source }).eq("order_no", data.order_no)
+  await sb.from("audit_log").insert({
+    actor: session.userId,
+    action: "chat_order_create",
+    entity: "orders",
+    entity_id: data.order_no,
+    meta: { source: input.source },
+  })
+  revalidatePath("/admin/orders")
+  revalidatePath("/admin")
+  return { ok: true, order_no: data.order_no, total: data.total }
 }

@@ -64,6 +64,27 @@ export interface ShopSettings {
   bkash_enabled: boolean
   bkash_number: string | null
   bkash_account_type: "personal" | "agent" | "merchant"
+  instagram_handle: string | null
+  facebook_page: string | null
+  messenger_username: string | null
+}
+
+export type OrderSource =
+  | "website"
+  | "whatsapp"
+  | "messenger"
+  | "instagram"
+  | "facebook"
+  | "phone"
+  | "other"
+
+export interface SocialPost {
+  id: number
+  platform: "instagram" | "facebook"
+  url: string
+  caption_bn: string | null
+  sort: number
+  is_active: boolean
 }
 
 export type OrderStatus =
@@ -93,6 +114,7 @@ export interface OrderRow {
   bkash_trx_id: string | null
   bkash_sender: string | null
   zone: "inside_dhaka" | "outside_dhaka"
+  source: OrderSource
   created_at: string
 }
 

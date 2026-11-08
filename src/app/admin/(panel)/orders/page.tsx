@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server"
 import { getSession, STATUS_LABELS, STATUS_COLORS, PAYMENT_LABELS, PAYMENT_COLORS } from "@/lib/auth"
 import { updateOrderStatusAction, verifyPaymentAction } from "@/app/admin/actions"
 import { SHOP_ID } from "@/lib/tenants"
+import { SOURCE_LABELS } from "@/lib/social"
+import type { OrderSource } from "@/lib/types"
 import { bdt, bnDate } from "@/lib/utils"
 import type { OrderStatus } from "@/lib/types"
 
@@ -24,9 +26,9 @@ const PAY_TABS = [
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; pay?: string }>
+  searchParams: Promise<{ status?: string; pay?: string; src?: string }>
 }) {
-  const { status, pay } = await searchParams
+  const { status, pay, src } = await searchParams
   const [sb, session] = await Promise.all([createClient(), getSession()])
   const isOwner = session?.profile.role === "owner"
 
@@ -39,6 +41,7 @@ export default async function OrdersPage({
   if (pay === "verify") query = query.eq("payment_status", "pending_verification")
   else if (pay === "cod" || pay === "bkash") query = query.eq("payment_method", pay)
   if (status && status !== "all") query = query.eq("status", status)
+  if (src && src in SOURCE_LABELS) query = query.eq("source", src)
   const { data: ordersRaw } = await query
 
   const orders = ordersRaw ?? []
@@ -58,7 +61,15 @@ export default async function OrdersPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-extrabold md:text-3xl">🧾 অর্ডারসমূহ</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-extrabold md:text-3xl">🧾 অর্ডারসমূহ</h1>
+        <Link
+          href="/admin/orders/new"
+          className="rounded-full bg-[#25D366] px-5 py-2.5 font-display text-sm font-bold text-white shadow-card transition-transform hover:scale-105"
+        >
+          💬 চ্যাট থেকে নতুন অর্ডার
+        </Link>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         {PAY_TABS.map((t) => {
@@ -88,6 +99,17 @@ export default async function OrdersPage({
         ))}
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        <Pill href={hrefWith({ pay }, status)} active={!src}>
+          সব উৎস
+        </Pill>
+        {Object.entries(SOURCE_LABELS).map(([key, label]) => (
+          <Pill key={key} href={hrefWith({ pay, src: key }, status)} active={src === key}>
+            {label}
+          </Pill>
+        ))}
+      </div>
+
       {(withItems).length === 0 ? (
         <div className="rounded-3xl border border-dashed border-line bg-surface p-12 text-center text-muted">
           এই ফিল্টারে কোনো অর্ডার নেই 🍃
@@ -103,6 +125,9 @@ export default async function OrdersPage({
                     <span className="ml-2 font-mono text-[11px] text-muted">{o.order_no}</span>
                     <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] text-muted">
                       {o.payment_method === "bkash" ? "📱 বিকাশ" : "💵 COD"}
+                    </span>
+                    <span className="ml-1 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] text-muted">
+                      {SOURCE_LABELS[(o.source ?? "website") as OrderSource]}
                     </span>
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
@@ -257,9 +282,10 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   )
 }
 
-function hrefWith(base: { pay?: string }, status?: string): string {
+function hrefWith(base: { pay?: string; src?: string }, status?: string): string {
   const params = new URLSearchParams()
   if (base.pay) params.set("pay", base.pay)
+  if (base.src) params.set("src", base.src)
   if (status && status !== "all") params.set("status", status)
   const qs = params.toString()
   return qs ? `/admin/orders?${qs}` : "/admin/orders"

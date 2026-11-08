@@ -45,6 +45,7 @@ Supabase ছাড়াই **ডেমো মোডে** চলে: নমু�
 3. Supabase → **SQL Editor**-এ পরপর দুটো ফাইল পুরোটা পেস্ট করে Run দাও:
    1. `supabase/migrations/0001_init.sql`
    2. `supabase/migrations/0002_oddbox_single_brand.sql`
+   3. `supabase/migrations/0003_social_channels.sql`
 4. **Authentication → Users → Add user** দিয়ে নিজের ইমেইল-পাসওয়ার্ডে অ্যাকাউন্ট বানাও, তারপর SQL Editor-এ এটা একবার চালাও (ইমেইল বদলে):
    ```sql
    update public.profiles p set role = 'owner', full_name = 'Ragib'
@@ -71,6 +72,18 @@ Vercel → Settings → Environment Variables-এ বসানো আছে।
 **ডোমেইন:** Vercel → shops-platform → Settings → Domains-এ `oddboxbd.shop` আর
 `www.oddboxbd.shop` যোগ করো, তারপর ডোমেইন যেখান থেকে কিনেছ সেখানে Vercel যে DNS
 রেকর্ড দেখায় সেগুলো বসাও।
+
+## 📱 সোশ্যাল মিডিয়া (WhatsApp · Messenger · Instagram · Facebook)
+
+- **হ্যান্ডেল/নম্বর:** Admin → সেটিংস ও পেমেন্ট → "সোশ্যাল মিডিয়া"।
+- **সাইটে যা আছে:** সব পেজে ভাসমান চ্যাট বাটন (WhatsApp + Messenger), প্রতিটা পণ্যে
+  "WhatsApp-এ অর্ডার" (পণ্যের নাম-দাম-লিংক আগে থেকে লেখা), হোমপেজে রিলস আর ফলো বাটন, ফুটারে সব লিংক।
+- **রিলস:** Instagram/Facebook-এ রিলের "Copy link" → Admin → সেটিংস → "হোমপেজের রিলস"-এ পেস্ট।
+- **চ্যাটে আসা অর্ডার:** Admin → অর্ডারসমূহ → "💬 চ্যাট থেকে নতুন অর্ডার"। বন্ধুরাও (ডেলিভারি টিম) পারবে।
+  অর্ডার হলে কাস্টমারকে পাঠানোর মেসেজ তৈরি হয়ে যায়। অর্ডার তালিকা আর ড্যাশবোর্ডে উৎস দেখা যায়।
+- **Facebook/Instagram Shop:** Meta Commerce Manager → Catalog → Data sources → Data feed →
+  Scheduled feed → `https://<ডোমেইন>/catalog.csv` (প্রতিদিন রিফ্রেশ)। তারপর রিল/পোস্টে পণ্য ট্যাগ করা যাবে।
+  Meta ছবি হিসেবে JPG/PNG চায়, তাই আসল পণ্যের ছবি আপলোড করার পরেই এটা কাজে লাগবে।
 
 ## ✏️ লঞ্চের আগে যা বদলাতে হবে
 

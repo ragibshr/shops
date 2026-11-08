@@ -1,4 +1,4 @@
-import type { Category, Product, Section, ShopSettings } from "@/lib/types"
+import type { Category, Product, Section, ShopSettings, SocialPost } from "@/lib/types"
 
 export const DEMO_SECTIONS: Section[] = [
   { id: "fun", name_bn: "মজার উপহার", emoji: "🎁", tagline_bn: "বন্ধুকে হাসান, একটু জ্বালান — প্যাকেজিং একদম আসল", status: "live", sort: 1 },
@@ -16,7 +16,12 @@ export const DEMO_SETTINGS: ShopSettings = {
   bkash_enabled: true,
   bkash_number: "01711000000",
   bkash_account_type: "personal",
+  instagram_handle: "oddboxbd",
+  facebook_page: "oddboxbd",
+  messenger_username: "oddboxbd",
 }
+
+export const DEMO_SOCIAL_POSTS: SocialPost[] = []
 
 export const DEMO_CATEGORIES: Category[] = [
   { id: "c-ob-farm", tenant: "oddbox", slug: "farm", name_bn: "ফার্ম সিরিজ", emoji: "🐄", sort: 1, section_id: "fun" },
